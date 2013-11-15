@@ -57,6 +57,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'south',
     'project.ospi',
+    'kronos',
 )
 
 MIDDLEWARE_CLASSES = (
