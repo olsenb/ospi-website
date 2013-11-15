@@ -28,7 +28,7 @@ class Account(models.Model):
         return u"%s" % self.user
 
 
-class Days(models.Model):
+class Day(models.Model):
     day = models.CharField(max_length=10)
 
     def __unicode(self):
@@ -52,7 +52,7 @@ class Zone(models.Model):
 class Schedule(models.Model):
     name = models.CharField(max_length=100)
     active = models.BooleanField(default=True)
-    days = models.ManyToManyField(Days, blank=True, null=True)
+    days = models.ManyToManyField(Day, blank=True, null=True)
     day_restrictions = models.NullBooleanField(choices=DAY_TYPES)
     interval = models.IntegerField(default=1)
     start_time = models.DateTimeField()

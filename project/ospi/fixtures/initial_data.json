@@ -1,0 +1,9 @@
+[
+    { "pk": 1, "model": "ospi.day", "fields": { "day": "Sunday" } },
+    { "pk": 2, "model": "ospi.day", "fields": { "day": "Monday" } },
+    { "pk": 3, "model": "ospi.day", "fields": { "day": "Tuesday" } },
+    { "pk": 4, "model": "ospi.day", "fields": { "day": "Wednesday" } },
+    { "pk": 5, "model": "ospi.day", "fields": { "day": "Thursday" } },
+    { "pk": 6, "model": "ospi.day", "fields": { "day": "Friday" } },
+    { "pk": 7, "model": "ospi.day", "fields": { "day": "Saturday" } }
+]
