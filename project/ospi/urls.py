@@ -3,10 +3,11 @@ from .views import *
 from django.views.generic import TemplateView
 
 urlpatterns = patterns('',
-    url('^$', TemplateView.as_view(template_name="ospi/home.html")),
+    url('^$', TemplateView.as_view(template_name="ospi/home.html"), name='home'),
     url('^stations/$', StationsListView.as_view(), name='stations_list' ),
     url('^stations/create/$', CreateStationsView.as_view(), name="stations_create"),
     url('^schedule/$', ScheduleListView.as_view(), name="schedule_list"),
     url('^schedule/create/$', CreateScheduleView.as_view(), name='schedule_create'),
     url('^settings/$', TemplateView.as_view(template_name="ospi/settings.html")),
+    url('^account/create/$', CreateAccountView.as_view(), name='account_create'),
 )
