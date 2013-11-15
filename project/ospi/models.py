@@ -123,10 +123,11 @@ class HourlyWeather(models.Model):
 
 
 class WaterLog(models.Model):
+    account = models.ForeignKey(Account)
     station = models.ForeignKey(Station)
     program = models.ForeignKey(Schedule, null=True)
     start_time = models.DateTimeField()
-    end_time = models.DateTimeField()
+    end_time = models.DateTimeField(null=True)
 
     @property
     def length(self):
