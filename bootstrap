@@ -56,7 +56,7 @@ success "Done installing/upgrading dependencies."
 
 ## Database Creation
 
-if [ ! -f ./databases/development.sqlite3 ]; then
+if [ ! -f ./project/db.sqlite3 ]; then
     info "Creating the development database..."
 
     ## Sync/Migrate
