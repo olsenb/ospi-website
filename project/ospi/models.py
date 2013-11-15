@@ -99,3 +99,9 @@ class Weather(models.Model):
 
     def __unicode__(self):
         return "%s (%s, %s)" % (self.day, self.low, self.high)
+
+class WaterLog(models.Model):
+    station = models.ForeignKey(Station)
+    program = models.ForeignKey(Schedule, null=True)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField() 
