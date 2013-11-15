@@ -6,7 +6,7 @@ DJANGO_ENV = "development"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '../development.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'development.sqlite3'),
     }
 }
 
