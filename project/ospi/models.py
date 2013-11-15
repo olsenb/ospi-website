@@ -22,16 +22,23 @@ class Account(models.Model):
     port = models.IntegerField(default=8080)
     weather_api = models.CharField(max_length=100, blank=True)
     zip_code = models.IntegerField(blank=True, null=True)
+    password = models.CharField(max_length=100, blank=True, default="opendoor")
+
     #TODO: master_zone
 
     def get_remote_uri(self):
         #TODO: support ssl
         return "http://%s:%s" % (self.ip, self.port)
 
-    def send(self, path, **params):
+    def send(self, path, password=False, **params):
+        if password:
+            params['pw'] = self.password
         uri = "%s/%s" % (self.get_remote_uri(), path)
         response = requests.get(uri, params=params)
         return response.text
+
+    def reset_stations(self):
+        self.send("cv", rsn=1, password=True)
 
     def __unicode__(self):
         return u"%s" % self.user
