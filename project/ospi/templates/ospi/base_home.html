@@ -21,6 +21,14 @@
     >
       <a href="{{ url }}">Stats</a>
     </li>
+    {% url 'stations_list' as url %}
+    <li
+      {% if url == request.path %}
+        class="active"
+      {% endif %}
+    >
+      <a href="{{ url }}">Stations</a>
+    </li>
     {% url 'rpi_logs' as url %}
     <li
       {% if url == request.path %}
