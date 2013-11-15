@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from django.db import models
+from datetime import datetime
 import requests
+from .weather import get_forecast_weather
 
 
 SOIL_TYPES = (
@@ -90,6 +92,20 @@ class Schedule(models.Model):
         return self.name
 
 
+class ForecastWeatherManager(models.Manager):
+    @staticmethod
+    def fetch():
+        result = get_forecast_weather()
+        all_forecasts = []
+        for forecast in result["forecast"]["simpleforecast"]["forecastday"]:
+            day = datetime(forecast['date']['year'], forecast['date']['month'], forecast['date']['day'])
+            forecast_weather = ForecastWeather(day=day, high=forecast["high"]["fahrenheit"],
+                                               low=forecast["low"]["fahrenheit"], rain=forecast["qpf_allday"]["in"],
+                                               humidity=forecast["minhumidity"])
+            all_forecasts.append(forecast_weather)
+        return all_forecasts
+
+
 class ForecastWeather(models.Model):
     day = models.DateField()
     high = models.IntegerField()
@@ -97,9 +113,7 @@ class ForecastWeather(models.Model):
     rain = models.FloatField()
     humidity = models.FloatField()
 
-    #manager goes here
-        # it has fetch method
-            # it returns a list of ForecastWeather objects
+    manager = ForecastWeatherManager()
 
     def __unicode__(self):
         return "%s (%s, %s)" % (self.day, self.low, self.high)
