@@ -7,3 +7,4 @@
 /.venv
 *.sql.gz
 *.sqlite3
+.idea
