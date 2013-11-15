@@ -11,5 +11,6 @@ urlpatterns = patterns('',
 
     url('^$', RedirectView.as_view(url="/ospi/"), name="home"),
     url('^ospi/', include('project.ospi.urls')),
+    url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),
 )
