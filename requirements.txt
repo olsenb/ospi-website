@@ -5,6 +5,7 @@ Werkzeug==0.9.4
 django-debug-toolbar==0.11.0
 django-extensions==1.2.5
 django-grappelli==2.5.0
+django-kronos==0.4
 ecdsa==0.10
 ipython==1.1.0
 paramiko==1.12.0
