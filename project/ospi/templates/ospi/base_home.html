@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+  {# TODO: Replace with the actual name. #}
+  <h2>My OpenSprinkler Pi</h2>
+
+  <ul class="nav nav-tabs">
+    {% url 'rpi_home' as url %}
+    <li
+      {% if url == request.path %}
+        class="active"
+      {% endif %}
+    >
+      <a href="{{ url }}">Overview</a>
+    </li>
+    {% url 'rpi_stats' as url %}
+    <li
+      {% if url == request.path %}
+        class="active"
+      {% endif %}
+    >
+      <a href="{{ url }}">Stats</a>
+    </li>
+    {% url 'rpi_logs' as url %}
+    <li
+      {% if url == request.path %}
+        class="active"
+      {% endif %}
+    >
+      <a href="{{ url }}">Logs</a>
+    </li>
+    {% url 'rpi_settings' as url %}
+    <li
+      {% if url == request.path %}
+        class="active"
+      {% endif %}
+    >
+      <a href="{{ url }}">Settings</a>
+    </li>
+  </ul>
+
+  {% block content_detail %}{% endblock %}
+{% endblock %}
