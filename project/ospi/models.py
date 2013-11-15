@@ -69,12 +69,26 @@ class Schedule(models.Model):
         return self.name
 
 
-class Weather(models.Model):
+class ForecastWeather(models.Model):
     day = models.DateField()
     high = models.IntegerField()
     low = models.IntegerField()
     rain = models.FloatField()
     humidity = models.FloatField()
 
+    #manager goes here
+        # it has fetch method
+            # it returns a list of ForecastWeather objects
+
     def __unicode__(self):
         return "%s (%s, %s)" % (self.day, self.low, self.high)
+
+
+class HourlyWeather(models.Model):
+    hour = models.DateTimeField()
+    temperature = models.IntegerField()
+    rain = models.FloatField()
+    humidity = models.FloatField()
+
+    def __unicode__(self):
+        return "%s %s" % (self.hour, self. temperature)
