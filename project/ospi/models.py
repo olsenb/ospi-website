@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+import requests
 
 
 SOIL_TYPES = (
@@ -21,8 +22,16 @@ class Account(models.Model):
     port = models.IntegerField(default=8080)
     weather_api = models.CharField(max_length=100, blank=True)
     zip_code = models.IntegerField(blank=True, null=True)
-
     #TODO: master_zone
+
+    def get_remote_uri(self):
+        #TODO: support ssl
+        return "http://%s:%s" % (self.ip, self.port)
+
+    def send(self, path, **params):
+        uri = "%s/%s" % (self.get_remote_uri(), path)
+        response = requests.get(uri, params=params)
+        return response.text
 
     def __unicode__(self):
         return u"%s" % self.user
@@ -31,7 +40,7 @@ class Account(models.Model):
 class Day(models.Model):
     day = models.CharField(max_length=10)
 
-    def __unicode(self):
+    def __unicode__(self):
         return self.day
 
 
@@ -44,6 +53,18 @@ class Station(models.Model):
     soil_type = models.CharField(max_length=15, choices=SOIL_TYPES, blank=True)
     ignore_rain = models.BooleanField(default=False)
 
+    class Meta:
+        unique_together = ('account', 'number')
+
+    def enable(self, time=0):
+        return self.account.send("sn%d=1&t=%d" % (self.number, time))
+
+    def disable(self):
+        return self.account.send("sn%d=0" % self.number)
+
+    def status(self):
+        response = self.account.send("sn%s" % self.number)
+        return bool(int(response))
 
     @property
     def short_name(self):
@@ -92,3 +113,11 @@ class HourlyWeather(models.Model):
 
     def __unicode__(self):
         return "%s %s" % (self.hour, self. temperature)
+
+
+class WaterLog(models.Model):
+    station = models.ForeignKey(Station)
+    program = models.ForeignKey(Schedule, null=True)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField() 
+
