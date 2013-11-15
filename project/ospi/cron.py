@@ -5,7 +5,7 @@ def update_log():
     accounts = Account.objects.all()
     for account in accounts:
         status = account.get_status()
-        for idx, station in enumerate(stations['stations']):
+        for idx, station in enumerate(status['stations']):
             mystation = Station.objects.get(number=idx+1, account=account)
             running = WaterLog.objects.get(end_time__is_null=True, account=account, station=mystation)
             if station is True and running.exists() is False:
