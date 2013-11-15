@@ -39,7 +39,9 @@ class Account(models.Model):
             params['pw'] = self.password
         uri = "%s/%s" % (self.get_remote_uri(), path)
         response = requests.get(uri, params=params)
-        return response.text
+        if response.status_code == 200:
+            return response.text
+        return None
 
     def reset_stations(self):
         self.send("cv", rsn=1, password=True)
@@ -86,6 +88,8 @@ class Station(models.Model):
 
     def status(self):
         response = self.account.send("sn%s" % self.number)
+        if response is None:
+            return None
         return bool(int(response))
 
     @property
