@@ -1,4 +1,9 @@
+# Standard Django ignores
 *.log
 *.pot
 *.pyc
-local_settings.py
+
+# Additional ignores
+/.venv
+*.sql.gz
+*.sqlite3

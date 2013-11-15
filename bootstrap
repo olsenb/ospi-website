@@ -1,0 +1,88 @@
+#!/bin/bash
+#
+# Bootstrap!
+#
+# The "bootstrap" script is intended to be the quick-and-easy way to get
+# started working on a project. After running the script a developer should be
+# able to start right into doing development work.
+#
+# A bootstrap script typically does the following:
+#   - Dependencies
+#     - OS dependencies (Python, MySQL, etc.)
+#     - virtualenv/requirements.txt
+#   - Create the database
+#   - Sync/Migrate the database
+#   - Database seeding
+#
+# Most of what goes into a bootstrap script will be standard. If, however, your
+# project is special and needs some extra things to happen before a developer
+# can get up and running then this is place to put that logic.
+#
+
+# Exit immediately if a command exits with a nonzero exit status.
+set -e
+
+# Helper subroutines to help with "logging".
+info () { printf "  [ \033[00;34m..\033[0m ] $1"; }
+success () { printf "\r\033[2K  [ \033[00;32mOK\033[0m ] $1\n"; }
+fail () { printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n"; echo ''; exit; }
+
+# Bootstrap!
+echo "Bootstrapping the project..."
+
+## Dependency Check
+
+info "Ensuring that the OS dependencies are present..."
+# TODO
+# MySQL, Python, virtualenv, etc. doesn't exist? Here's how to install it...
+success "Done ensuring that the OS dependencies are present."
+
+info "Ensuring that the virtualenv exists..."
+if [ ! -d ./.venv ]; then
+    # - The --no-site-packages option is used to help ensure that all
+    #   dependencies are declared/tracked in the requirements.txt file.
+    # - Use the same version of python (2.6) that's installed on the servers.
+    #   (TODO: Upgrade the servers to Python 2.7!)
+    virtualenv --no-site-packages --python=python2.6 .venv
+fi
+success "Done ensuring that the virtualenv exists."
+
+info "Activating the virtualenv..."
+source ".venv/bin/activate"
+success "Done activating the virtualenv."
+
+# Install/Update dependencies.
+info "Installing/Upgrading dependencies..."
+pip install -r requirements.txt
+success "Done installing/upgrading dependencies."
+
+## Database Creation
+
+if [ ! -f ./databases/development.sqlite3 ]; then
+    info "Creating the development database..."
+
+    ## Sync/Migrate
+
+    # Using "South" for database migrations requires a little extra work. A
+    # normal "syncdb" must be performed before you can run "./manage.py
+    # migrate". (South requires a database table to be present before it can
+    # do its thing.) The "--noinput" option is specified since attempting to
+    # create the superuser will also attempt to create a corresponding
+    # Profile for that User. This will fail, however, since the Profile isn't
+    # created until "migrate" has been run.
+    ./manage.py syncdb --noinput
+    ./manage.py migrate
+
+    ## Seed Data
+
+    # Create the superuser account for the development database using a
+    # simple username/password.
+    create_superuser_cmd="from django.contrib.auth.models import User; "
+    create_superuser_cmd+="User.objects.create_superuser("
+    create_superuser_cmd+="'admin', 'admin@example.com', 'test')"
+    echo "${create_superuser_cmd}" | ./manage.py shell
+
+    success "Done creating the development database."
+fi
+
+success "Bootstrapping complete."
