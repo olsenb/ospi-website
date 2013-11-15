@@ -35,11 +35,15 @@ class Day(models.Model):
         return self.day
 
 
-class Zone(models.Model):
+class Station(models.Model):
+    account = models.ForeignKey(Account)
+    number = models.IntegerField(default=0)
     name = models.CharField(max_length=100)
     pump = models.BooleanField(default=False)
     heads = models.IntegerField(default=0)
     soil_type = models.CharField(max_length=15, choices=SOIL_TYPES, blank=True)
+    ignore_rain = models.BooleanField(default=False)
+
 
     @property
     def short_name(self):
@@ -50,6 +54,7 @@ class Zone(models.Model):
 
 
 class Schedule(models.Model):
+    account = models.ForeignKey(Account)
     name = models.CharField(max_length=100)
     active = models.BooleanField(default=True)
     days = models.ManyToManyField(Day, blank=True, null=True)
@@ -58,7 +63,7 @@ class Schedule(models.Model):
     start_time = models.DateTimeField()
     repeat = models.TimeField()
     run_time = models.TimeField()
-    zones = models.ManyToManyField(Zone)
+    stations = models.ManyToManyField(Station)
 
     def __unicode__(self):
         return self.name
