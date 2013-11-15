@@ -41,9 +41,7 @@ info "Ensuring that the virtualenv exists..."
 if [ ! -d ./.venv ]; then
     # - The --no-site-packages option is used to help ensure that all
     #   dependencies are declared/tracked in the requirements.txt file.
-    # - Use the same version of python (2.6) that's installed on the servers.
-    #   (TODO: Upgrade the servers to Python 2.7!)
-    virtualenv --no-site-packages --python=python2.6 .venv
+    virtualenv --no-site-packages .venv
 fi
 success "Done ensuring that the virtualenv exists."
 
