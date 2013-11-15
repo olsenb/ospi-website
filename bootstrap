@@ -83,4 +83,8 @@ if [ ! -f ./project/development.sqlite3 ]; then
     success "Done creating the development database."
 fi
 
+# Collect Static
+
+./manage.py collectstatic --noinput
+
 success "Bootstrapping complete."

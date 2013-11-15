@@ -1,12 +1,13 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
-
+from datetime import datetime
 from .weather import get_current_weather, get_forecast_weather
-from .models import Account, Station
+from .models import Account, Station, ForecastWeatherManager
 
 
 # Create your tests here.
-class GetWeatherTests(TestCase):
+class WeatherTests(TestCase):
+
     def test_get_current_weather(self):
         result = get_current_weather()
 
@@ -47,3 +48,15 @@ class StationTests(TestCase):
         for station in Station.objects.all():
             self.assertFalse(station.status)
 
+
+class ForecastWeatherManagerTests(TestCase):
+
+    def test_fetch(self):
+        forecasts = ForecastWeatherManager.fetch()
+
+        self.assertEquals(len(forecasts), 4)
+        self.assertEquals(forecasts[0].day, datetime(2013, 11, 15))
+        self.assertEquals(forecasts[0].high, "70")
+        self.assertEquals(forecasts[0].low, "34")
+        self.assertEquals(forecasts[0].rain, 0.0)
+        self.assertEquals(forecasts[0].humidity, 24)

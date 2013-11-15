@@ -1,0 +1,21 @@
+{% extends 'ospi/base_home.html' %}
+
+{% block content_detail %}
+    <table class='table table-striped table-bordered'>
+        <tr>
+            <th>Program</th>
+            <th>Station</th>
+            <th>Duration</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+        </tr>
+        {% for log in obect_list %}
+        <tr>
+            <td>{% if log.program %}{{ log.program }}{% else %}Manual{% endif %}</td>
+            <td>(( log.station }}</td>
+            <td>{{ log.length }}</td>
+            <td>{{ log.start_time }}</td>
+            <td>{{ log.end_time }}</td>
+        </tr>
+        {% endfor %}
+{% endblock %}
