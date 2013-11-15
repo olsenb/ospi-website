@@ -3,9 +3,9 @@ from .models import *
 from django.views.generic import CreateView, ListView, UpdateView
 
 # Create your views here.
-class CreateZoneView(CreateView):
-    template_name='ospi/zone_create.html'
-    model=Zone
+class CreateStationView(CreateView):
+    template_name='ospi/station_create.html'
+    model=Station
 
 class CreateScheduleView(CreateView):
     template_name='ospi/schedule_create.html'
