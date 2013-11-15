@@ -1,3 +1,5 @@
+import re
+
 from django.contrib.auth.models import User
 from django.db import models
 from datetime import datetime
@@ -41,6 +43,17 @@ class Account(models.Model):
 
     def reset_stations(self):
         self.send("cv", rsn=1, password=True)
+
+    def get_status(self):
+        #settings = self.send("")
+
+        response = self.send("sn0")
+        try:
+            statuses = [bool(int(l)) for l in list(re.search("\d+", response).group(0))]
+        except AttributeError:
+            return None
+
+        return {'stations': statuses}
 
     def __unicode__(self):
         return u"%s" % self.user
