@@ -16,6 +16,13 @@ class CreateStationsView(CreateView):
     def get_success_url(self):
         return reverse('stations_list')
 
+class UpdateStationsView(UpdateView):
+    template_name='ospi/stations_edit.html'
+    model=Station
+
+    def get_success_url(self):
+        return reverse('stations_list')
+
 
 class ScheduleListView(ListView):
     model=Schedule
