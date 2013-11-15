@@ -8,3 +8,6 @@
 *.sql.gz
 *.sqlite3
 .idea
+
+# Misc
+.DS_Store
