@@ -43,13 +43,3 @@ class CreateAccountView(CreateView):
     def get_success_url(self):
         return reverse('home')
 
-def deleteStation(request):
-    print "Hello World"
-    if request.is_ajax() and 'id' in request.GET:
-        station = Station.objects.get(pk=request.GET['id'])
-        station.delete()
-
-        messages.add_message(request, "Station Deleted")
-
-    else:
-        messages.add_message(request, "Could not Delete Station")
