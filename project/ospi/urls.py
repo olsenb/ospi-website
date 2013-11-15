@@ -7,7 +7,6 @@ urlpatterns = patterns('',
     url('^stations/$', StationsListView.as_view(), name='stations_list'),
     url('^stations/create/$', CreateStationsView.as_view(), name="stations_create"),
     url('^stations/edit/(?P<pk>\d+)/$', UpdateStationsView.as_view(), name='stations_edit'),
-    url('^stations/delete/(?P<pk>\d+)/$', 'deleteStation', name='stations_delete'),
     url('^schedule/$', ScheduleListView.as_view(), name="schedule_list"),
     url('^schedule/create/$', CreateScheduleView.as_view(), name='schedule_create'),
     url(
