@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_extensions',
     'south',
+    'project.ospi',
 )
 
 MIDDLEWARE_CLASSES = (
