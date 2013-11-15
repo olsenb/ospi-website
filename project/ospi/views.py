@@ -13,9 +13,10 @@ class StationsListView(ListView):
 class CreateStationsView(CreateView):
     template_name='ospi/station_create.html'
     model=Station
-    
+
     def get_success_url(self):
         return reverse('stations_list')
+
 
 class UpdateStationsView(UpdateView):
     template_name='ospi/stations_edit.html'
@@ -33,7 +34,7 @@ class ScheduleListView(ListView):
 class CreateScheduleView(CreateView):
     template_name='ospi/schedule_create.html'
     model=Schedule
-    
+
     def get_success_url(self):
         return reverse('schedule_list')
 
@@ -43,4 +44,3 @@ class CreateAccountView(CreateView):
     model=Account
     def get_success_url(self):
         return reverse('home')
-
