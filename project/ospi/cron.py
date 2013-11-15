@@ -1,6 +1,8 @@
 from .views import *
 from django.utils import timezone
+import kronos
 
+@kronos.register('* * * * *')
 def update_log():
     accounts = Account.objects.all()
     for account in accounts:
@@ -16,5 +18,12 @@ def update_log():
                 #End log
                 running.end_time = timezone.now()
                 running.save()
-            
-                
+
+
+@kronos.register('0 */4 * * *')
+def pull_data():
+    accounts = Account.objects.all()
+    for account in accounts:
+        forecasts = ForecastWeather.objects.fetch(account.weather_api, account.zip_code)
+        for forecast in forecasts:
+            forecast.save()
