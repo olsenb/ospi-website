@@ -16,7 +16,7 @@ urlpatterns = patterns('',
     ),
     url(
         '^logs/$',
-        TemplateView.as_view(template_name="ospi/rpi_logs.html"),
+        WaterLogView.as_view(),
         name="rpi_logs"
     ),
     url(

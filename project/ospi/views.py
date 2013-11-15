@@ -44,3 +44,6 @@ class CreateAccountView(CreateView):
     def get_success_url(self):
         return reverse('home')
 
+class WaterLogView(ListView):
+    template_name='ospi/waterlog_view.html'
+    model=WaterLog

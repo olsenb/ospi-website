@@ -126,5 +126,8 @@ class WaterLog(models.Model):
     station = models.ForeignKey(Station)
     program = models.ForeignKey(Schedule, null=True)
     start_time = models.DateTimeField()
-    end_time = models.DateTimeField() 
+    end_time = models.DateTimeField()
 
+    @property
+    def length(self):
+        return (self.end_time - self.end_time)
