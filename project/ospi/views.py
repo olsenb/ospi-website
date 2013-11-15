@@ -26,6 +26,7 @@ class UpdateStationsView(UpdateView):
 
 
 class ScheduleListView(ListView):
+    template_name='ospi/schedule_list.html'
     model=Schedule
 
 
