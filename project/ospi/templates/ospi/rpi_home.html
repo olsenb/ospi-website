@@ -22,6 +22,11 @@
     <strong>Zip Code</strong>:
     {% if account.zip_code %}
       {{ account.zip_code }}
+      <small>
+        <a target="_blank" href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query={{ account.zip_code }}">
+          view forecast
+          <i class="glyphicon glyphicon-new-window"></i></a>
+      </small>
     {% else %}
       --
     {% endif %}
