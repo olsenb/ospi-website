@@ -16,27 +16,38 @@
         </span>
       </small>
     </h2>
-
-    <strong>URL</strong>:
-    {% if account.get_remote_uri %}
-      <a href="{{ account.get_remote_uri }}"
-      >{{ account.get_remote_uri }}</a>
-    {% else %}
-      --
-    {% endif %}
-    <br/>
-    <strong>Zip Code</strong>:
-    {% if account.zip_code %}
-      {{ account.zip_code }}
-      <small>
-        <a target="_blank" href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query={{ account.zip_code }}">
-          view forecast
-          <i class="glyphicon glyphicon-new-window"></i></a>
-      </small>
-    {% else %}
-      --
-    {% endif %}
-    <br/>
+    <div class="row">
+      <div class="col-md-5 col-xs-12">
+        <strong>URL</strong>:
+        {% if account.get_remote_uri %}
+          <a href="{{ account.get_remote_uri }}">
+            {{ account.get_remote_uri }}
+          </a>
+        {% else %}
+          --
+        {% endif %}
+        <br />
+        <strong>Zip Code</strong>:
+        {% if account.zip_code %}
+          {{ account.zip_code }}
+          <small>
+            <a target="_blank" href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query={{ account.zip_code }}">
+              view forecast
+              <i class="glyphicon glyphicon-new-window"></i></a>
+          </small>
+        {% else %}
+          --
+        {% endif %}
+      </div>
+      <div class="col-md-6 col-xs-12">
+        <strong>Current Weather:</strong>
+        <br />
+        <img src="{{ weather.current_observation.icon_url }}" />
+        {{ weather.current_observation.temp_f }} F<br />
+        {{ weather.current_observation.precip_1hr_in }}" Rain
+        {{ weather.current_observation.relative_humidity }} Humidity
+      </div>
+    </div>
     {% comment %}
     <strong>Last Watering</strong>:
     {% if account.last_watering %}
