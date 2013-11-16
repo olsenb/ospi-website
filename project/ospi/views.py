@@ -108,20 +108,30 @@ class StatsView(ListView):
         context = super(StatsView, self).get_context_data(**kwargs)
 
         data = []
+        pie = []
         data.append(['Day','Usage'])
+        pie.append(['Station', 'Total Hours'])
         total = 0.0
         for i in range(0,31):
             time_running = 0.0
             time = timezone.now()-datetime.timedelta(days=30-i)
             logs = WaterLog.objects.filter(start_time__gte=time, start_time__lt=time+datetime.timedelta(days=1))
             for log in logs:
-                time_running += log.length.days * 24 + log.length.seconds // 3600
+                running = log.length.days * 24 + log.length.seconds // 3600
+                time_running += running*log.station.heads
 
             usage = time_running*5
             total += usage
+            data.append([(str(time.month)+'/'+str(time.day)), round(usage,2)])
 
-            data.append([(str(time.month) + '/' + str(time.day)), round(usage,2)])
+        for station in Station.objects.all():
+            logs = WaterLog.objects.filter(start_time__gte=timezone.now()-datetime.timedelta(days=30))
+            head_usage = 0
+            for log in logs:
+                head_usage += (log.length.days * 24 + log.length.seconds //3600) * log.station.heads
+            pie.append([str(station.name), head_usage])
         
         context['data'] = data
         context['total'] = round(total,2)
+        context['pie'] = pie
         return context

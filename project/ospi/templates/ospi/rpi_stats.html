@@ -6,6 +6,8 @@
   <h2>Stats</h2>
 
   <div id='chart_div' style='height: 360px;'></div>
+  <br />
+  <div id='piechart' style='height: 360px;'></div>
 {% endblock %}
 
 {% block extrascripts %}
@@ -21,7 +23,6 @@
         vAxis: {title: "Gallons", format: '# gal'},
         hAxis: {title: "Day"},
         seriesType: "bars",
-        series: {1: {type: "line"}},
         title: "Total: {{ total }} gallons",
         titleTextStyle: {fontSize: "20",},
       };
@@ -30,5 +31,18 @@
       chart.draw(data,options);
     }
     google.setOnLoadCallback(drawVisualization);
+  </script>
+  <script type='text/javascript'>
+    function DrawPieChart(){
+        var data = google.visualization.arrayToDataTable({{ pie|safe }});
+
+        var options = {
+            title: "Head Usage"
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+        chart.draw(data, options);
+    }
+    google.setOnLoadCallback(DrawPieChart);
   </script>
 {% endblock %}
