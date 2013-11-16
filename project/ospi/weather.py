@@ -17,7 +17,7 @@ def get_geo_lookup(account):
 
 
 def base_helper_function(api_key, method, state, city):
-    return get_results(api_key, method, "%s/%s" % (state, city))
+    return get_results("fa092a1bdf600850", method, "%s/%s" % (state, city))
 
 
 def get_results(api_key, method, lookup_key):
