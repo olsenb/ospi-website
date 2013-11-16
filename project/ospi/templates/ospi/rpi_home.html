@@ -115,6 +115,26 @@
                 {% endcomment %}
               </td>
               <td style="text-align: center; vertical-align: middle;">
+                <button
+                  type="button"
+                  {% if station.status %}
+                    class="btn btn-danger toggle-station"
+                    data-target-state="disabled"
+                  {% else %}
+                    class="btn btn-success toggle-station"
+                    data-target-state="enabled"
+                  {% endif %}
+                  data-id="{{ station.pk }}"
+                >
+                  Turn
+                  {% if station.status %}
+                    Off
+                  {% else %}
+                    On
+                  {% endif %}
+                </button>
+
+                {% comment %}
                 {% if station.status %}
                   {# It's on, allow the user to turn it off. #}
                   <button
@@ -139,6 +159,7 @@
                     Turn On
                   </button>
                 {% endif %}
+                {% endcomment %}
               </td>
             </tr>
           {% endfor %}
@@ -154,7 +175,6 @@
       <h4>You don't have any OpenSprinkler Pis setup yet.</h4>
     </div>
   {% endfor %}
-
 
   {% comment %}
   <div class="well">
@@ -174,60 +194,66 @@
   <script>
     $("abbr").tooltip();
 
-    $(".turn-on-station").click(function(event) {
-      "use strict";
-      event.preventDefault();
-      var stationId = $(this).data('id');
+    function ajaxStationUpdate(stationId, action) {
       $.ajax({
         type: "POST",
-        url: "/ospi/stations/" + stationId + "/enable/",
+        url: "/ospi/stations/" + stationId + "/" + action + "/",
         beforeSend: function(request) {
           request.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
         },
         complete: function(xhr, status) {
           if (status === "success") {
-            location.reload();
+            {# Don't do anything. #}
           } else {
-            // Display an error alert message.
+            {# Display an error alert message. #}
             var errorMessage = [
               '<div class="alert alert-danger alert-dismissable">',
                 '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>',
                 'An unknown error occurred in the system. Please try again later.',
               '</div>'
             ].join('');
-            $('div.messages').html(errorMessage).show();
+            $('div.messages').html(errorMessage).show('fast');
           }
         },
       });
-    });
+    }
 
-    $(".turn-off-station").click(function(event) {
+    function enableStation(stationId, stationButton) {
+      ajaxStationUpdate(stationId, "enable");
+      {# Update the button. #}
+      $(stationButton).text("Turn Off");
+      $(stationButton).removeClass("btn-success");
+      $(stationButton).addClass("btn-danger");
+      $(stationButton).data("target-state", "disabled");
+      {# Update the station row. #}
+      $(stationButton).closest("tr").addClass("success");
+    }
+
+    function disableStation(stationId, stationButton) {
+      ajaxStationUpdate(stationId, "disable");
+      {# Update the button. #}
+      $(stationButton).text("Turn On");
+      $(stationButton).removeClass("btn-danger");
+      $(stationButton).addClass("btn-success");
+      $(stationButton).data("target-state", "enabled");
+      {# Update the station row. #}
+      $(stationButton).closest("tr").removeClass("success");
+    }
+
+    function toggleStation(stationId, targetState, stationButton) {
+      if (targetState === "enabled") {
+        enableStation(stationId, stationButton);
+      } else {
+        disableStation(stationId, stationButton);
+      }
+    }
+
+    $(".toggle-station").click(function(event) {
       "use strict";
       event.preventDefault();
       var stationId = $(this).data('id');
-      $.ajax({
-        type: "POST",
-        url: "/ospi/stations/" + stationId + "/disable/",
-        beforeSend: function(request) {
-          request.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
-        },
-        success: function(result, status, xhr) {
-          location.reload();
-          {% comment %}
-            Hide the "Turn On" button and display the "Turn Off" button.
-          {% endcomment %}
-        },
-        error: function(xhr, status, error) {
-          // Display an error alert message.
-          var errorMessage = [
-            '<div class="alert alert-danger alert-dismissable">',
-              '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>',
-              'An unknown error occurred in the system. Please try again later.',
-            '</div>'
-          ].join('');
-          $('div.messages').html(errorMessage).show();
-        },
-      });
+      var targetState = $(this).data('target-state');
+      toggleStation(stationId, targetState, this);
     });
   </script>
 {% endblock %}

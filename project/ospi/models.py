@@ -1,4 +1,5 @@
 import datetime
+from django.utils import timezone
 import re
 
 from django.contrib.auth.models import User
@@ -14,7 +15,7 @@ SOIL_TYPES = (
 
 
 DAY_TYPES = (
-    (None, ''),
+    (None, 'No Restrictions'),
     (False, 'Even'),
     (True, 'Odd'),
 )
@@ -70,6 +71,9 @@ class Day(models.Model):
     day = models.CharField(max_length=10)
     bit_value = models.IntegerField(unique=True, default=1)
 
+    class Meta:
+        ordering = ('bit_value',)
+
     def __unicode__(self):
         return self.day
 
@@ -85,6 +89,7 @@ class Station(models.Model):
 
     class Meta:
         unique_together = ('account', 'number')
+        ordering = ('number',)
 
     def enable(self, time=0):
         self.account.set_manual()
@@ -114,7 +119,7 @@ class Station(models.Model):
         return self.heads * 5.0
 
     def __unicode__(self):
-        return self.name
+        return "%d - %s" % (self.number, self.name)
 
 
 class Schedule(models.Model):
@@ -127,8 +132,8 @@ class Schedule(models.Model):
     interval_offset = models.IntegerField(default=0)
     start_time = models.TimeField()
     end_time = models.TimeField()
-    repeat = models.TimeField()
-    run_time = models.TimeField()
+    repeat = models.TimeField(help_text="How often to restart the schedule")
+    run_time = models.TimeField(help_text="How long to run each station")
     stations = models.ManyToManyField(Station)
 
     def __unicode__(self):
@@ -139,12 +144,14 @@ class Schedule(models.Model):
         return self.start_time
 
     def days_map(self):
-        # return bitmap of days
-        # add 128 if restrictions are set
+        """ return bitmap of days,
+         add 128 if restrictions are set
+          this field is used for the interval offset if interval is used
+        """
+        #
         if self.interval > 1:
             map = 128
-            #TODO: add interval_offset
-            #map + self.interval_offset
+            map += self.interval_offset
             return map
         map = 0
         for day in self.days.all():
@@ -154,12 +161,27 @@ class Schedule(models.Model):
         return map
 
     def interval_map(self):
+        """
+        used for day restriction unless interval is used
+        """
         if self.interval > 1:
             return self.interval
         else:
             if self.day_restrictions:
                 return 1
         return 0
+
+    def get_intervals(self):
+        intervals = []
+        time = self.start_time
+        while time < self.end_time:
+            start = time
+            end = (datetime.datetime.combine(datetime.date(1,1,1),time) + datetime.timedelta(hours=self.run_time.hour) + datetime.timedelta(minutes=self.run_time.minute) + datetime.timedelta(seconds=self.run_time.second)).time()
+            intervals.append([start, end])
+            
+            time = (datetime.datetime.combine(datetime.date(1,1,1),end) + datetime.timedelta(hours=self.repeat.hour) + datetime.timedelta(minutes=self.repeat.minute) + datetime.timedelta(seconds=self.repeat.second)).time()
+        
+        return intervals
 
     def time_sec(self, time):
         return time.hour * 60 + time.minute
@@ -171,13 +193,20 @@ class Schedule(models.Model):
         return map
 
     def check_schedule(self, forecast_weathers):
-        today = datetime.now().isoweekday()
         for forecast_weather in forecast_weathers:
+            try:
+                day = Day.objects.get(bit_value=pow(2, forecast_weather.day.isoweekday()))
+            except Day.DoesNotExist:
+                continue
+
+            # disable for rain
             if forecast_weather.rain >= 1.0:
-                self.days.remove(Day.objects.get(bit_value=pow(2, today)))
-                today += 1
-                if today > 7:
-                    today = 1
+                self.days.remove(day)
+            else:
+                self.days.add(day)
+            # modify run_time based on temp
+            # modify run_time based on humidity
+
         self.save()
         self.send_schedule()
 
@@ -253,6 +282,9 @@ class WaterLog(models.Model):
     program = models.ForeignKey(Schedule, null=True, blank=True)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField(null=True, blank=True)
+
+    def __unicode__(self):
+        return "%s - %s" % (self.station.number, self.start_time.strftime("%Y-%m-%d %H:%M"))
 
     @property
     def length(self):

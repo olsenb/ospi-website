@@ -129,7 +129,7 @@
 		"skyicon":"partlycloudy",
 		"pop":10,
 		"qpf_allday": {
-		"in": 0.00,
+		"in": 5.00,
 		"mm": 0.0
 		},
 		"qpf_day": {
