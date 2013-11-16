@@ -1,0 +1,251 @@
+
+{
+  "response": {
+  "version":"0.1",
+  "termsofService":"http://www.wunderground.com/weather/api/d/terms.html",
+  "features": {
+  "geolookup": 1
+  }
+	}
+		,	"location": {
+		"type":"CITY",
+		"country":"US",
+		"country_iso3166":"US",
+		"country_name":"USA",
+		"state":"UT",
+		"city":"Saint George",
+		"tz_short":"MST",
+		"tz_long":"America/Denver",
+		"lat":"37.08689499",
+		"lon":"-113.58486176",
+		"zip":"84770",
+		"magic":"1",
+		"wmo":"99999",
+		"l":"/q/zmw:84770.1.99999",
+		"requesturl":"US/UT/Saint_George.html",
+		"wuiurl":"http://www.wunderground.com/US/UT/Saint_George.html",
+		"nearby_weather_stations": {
+		"airport": {
+		"station": [
+		{ "city":"St. George", "state":"UT", "country":"US", "icao":"KSGU", "lat":"37.04000092", "lon":"-113.51000214" },
+		{ "city":"Colorado City", "state":"AZ", "country":"US", "icao":"KAZC", "lat":"36.97000122", "lon":"-113.01999664" },
+		{ "city":"Cedar City", "state":"UT", "country":"US", "icao":"KCDC", "lat":"37.70000076", "lon":"-113.09999847" }
+		]
+		}
+		,
+		"pws": {
+		"station": [
+		{
+		"neighborhood":"Dixie Middle School",
+		"city":"St. George",
+		"state":"UT",
+		"country":"US",
+		"id":"KUTSTGEO12",
+		"lat":37.092220,
+		"lon":-113.581390,
+		"distance_km":0,
+		"distance_mi":0
+		},
+		{
+		"neighborhood":"SG Villa",
+		"city":"St. George",
+		"state":"UT",
+		"country":"US",
+		"id":"KUTSTGEO13",
+		"lat":37.111176,
+		"lon":-113.550247,
+		"distance_km":4,
+		"distance_mi":2
+		},
+		{
+		"neighborhood":"Serenity Hills Subdivision",
+		"city":"Saint George",
+		"state":"UT",
+		"country":"US",
+		"id":"KUTSAINT4",
+		"lat":37.074791,
+		"lon":-113.532700,
+		"distance_km":4,
+		"distance_mi":2
+		},
+		{
+		"neighborhood":"Bloomington",
+		"city":"St. George",
+		"state":"UT",
+		"country":"US",
+		"id":"KUTST.GE2",
+		"lat":37.049000,
+		"lon":-113.619102,
+		"distance_km":5,
+		"distance_mi":3
+		},
+		{
+		"neighborhood":"Seven Hills",
+		"city":"St George",
+		"state":"UT",
+		"country":"US",
+		"id":"KUTSTGEO6",
+		"lat":37.128418,
+		"lon":-113.628807,
+		"distance_km":6,
+		"distance_mi":3
+		},
+		{
+		"neighborhood":"Stonehedge/WashFields",
+		"city":"Washington",
+		"state":"UT",
+		"country":"US",
+		"id":"KUTWASHI7",
+		"lat":37.078541,
+		"lon":-113.505257,
+		"distance_km":7,
+		"distance_mi":4
+		},
+		{
+		"neighborhood":"400 S Puerto Drive",
+		"city":"Ivins",
+		"state":"UT",
+		"country":"US",
+		"id":"KUTIVINS2",
+		"lat":37.161331,
+		"lon":-113.666573,
+		"distance_km":10,
+		"distance_mi":6
+		},
+		{
+		"neighborhood":"Coral Canyon",
+		"city":"Washington",
+		"state":"UT",
+		"country":"US",
+		"id":"KUTWASHI8",
+		"lat":37.141617,
+		"lon":-113.468452,
+		"distance_km":11,
+		"distance_mi":7
+		},
+		{
+		"neighborhood":"Taviawk",
+		"city":"Ivins",
+		"state":"UT",
+		"country":"US",
+		"id":"KUTIVINS4",
+		"lat":37.186176,
+		"lon":-113.689194,
+		"distance_km":14,
+		"distance_mi":8
+		},
+		{
+		"neighborhood":"RAWS WHITE REEF UT US",
+		"city":"Leeds",
+		"state":"UT",
+		"country":"US",
+		"id":"MWRRU1",
+		"lat":37.215984,
+		"lon":-113.378319,
+		"distance_km":23,
+		"distance_mi":13
+		},
+		{
+		"neighborhood":"Painted Hills",
+		"city":"Hurricane",
+		"state":"UT",
+		"country":"US",
+		"id":"KUTHURRI6",
+		"lat":37.169998,
+		"lon":-113.330002,
+		"distance_km":24,
+		"distance_mi":14
+		},
+		{
+		"neighborhood":"Rainbow Canyon Subdivision",
+		"city":"Hurricane",
+		"state":"UT",
+		"country":"US",
+		"id":"KUTHURRI8",
+		"lat":37.139351,
+		"lon":-113.302612,
+		"distance_km":25,
+		"distance_mi":15
+		},
+		{
+		"neighborhood":"Hurricane Fields",
+		"city":"Hurricane",
+		"state":"UT",
+		"country":"US",
+		"id":"KUTHURRI4",
+		"lat":37.167297,
+		"lon":-113.306694,
+		"distance_km":26,
+		"distance_mi":15
+		},
+		{
+		"neighborhood":"MesoWest Hurricane UT US AQ",
+		"city":"La Verkin",
+		"state":"UT",
+		"country":"US",
+		"id":"MQHU",
+		"lat":37.179001,
+		"lon":-113.305199,
+		"distance_km":26,
+		"distance_mi":16
+		},
+		{
+		"neighborhood":"La Verkin",
+		"city":"La Verkin",
+		"state":"UT",
+		"country":"US",
+		"id":"KUTLAVER2",
+		"lat":37.216000,
+		"lon":-113.267998,
+		"distance_km":31,
+		"distance_mi":18
+		},
+		{
+		"neighborhood":"Veyo - 18Miles NW of St. George Utah at 4500 Ft.",
+		"city":"Veyo",
+		"state":"UT",
+		"country":"US",
+		"id":"KUTVEYO1",
+		"lat":37.347000,
+		"lon":-113.695999,
+		"distance_km":30,
+		"distance_mi":18
+		},
+		{
+		"neighborhood":"RAWS DIXIE PORTABLE #4 UT US",
+		"city":"Central",
+		"state":"UT",
+		"country":"US",
+		"id":"MTS716",
+		"lat":37.390057,
+		"lon":-113.512199,
+		"distance_km":34,
+		"distance_mi":20
+		},
+		{
+		"neighborhood":"Pine Valley",
+		"city":"Pine Valley",
+		"state":"UT",
+		"country":"US",
+		"id":"KUTPINEV3",
+		"lat":37.389858,
+		"lon":-113.533257,
+		"distance_km":33,
+		"distance_mi":20
+		},
+		{
+		"neighborhood":"RAWS BLACK ROCK AZ US",
+		"city":"Littlefield",
+		"state":"AZ",
+		"country":"US",
+		"id":"MQBRA3",
+		"lat":36.794445,
+		"lon":-113.750557,
+		"distance_km":35,
+		"distance_mi":21
+		}
+		]
+		}
+		}
+	}
+}

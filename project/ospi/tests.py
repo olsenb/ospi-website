@@ -1,15 +1,18 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 from datetime import datetime
-from .weather import get_current_weather, get_forecast_weather
+from .weather import get_current_weather, get_forecast_weather, get_geo_lookup
 from .models import Account, Station, ForecastWeatherManager
 
 
 # Create your tests here.
 class WeatherTests(TestCase):
 
+    def setUp(self):
+        self.account = Account.objects.create(weather_api="some_api_key", zip_code="84770")
+
     def test_get_current_weather(self):
-        result = get_current_weather()
+        result = get_current_weather(self.account.weather_api)
 
         self.assertIsNotNone(result["current_observation"])
 
@@ -20,7 +23,7 @@ class WeatherTests(TestCase):
         self.assertIsNotNone(root["relative_humidity"])
 
     def test_get_forecast_weather(self):
-        result = get_forecast_weather()
+        result = get_forecast_weather(self.account.weather_api)
 
         self.assertIsNotNone(result["forecast"])
 
@@ -29,6 +32,14 @@ class WeatherTests(TestCase):
             self.assertIsNotNone(forecast["low"]["fahrenheit"])
             self.assertIsNotNone(forecast["qpf_allday"]["in"])
             self.assertIsNotNone(forecast["minhumidity"])
+
+    def test_get_geo_lookup(self):
+        result = get_geo_lookup(self.account.weather_api)
+
+        self.assertIsNotNone(result["location"])
+        self.assertEquals("84770", result["location"]["zip"])
+        self.assertEquals("Saint George", result["location"]["city"])
+        self.assertEquals("UT", result["location"]["state"])
 
 
 class StationTests(TestCase):

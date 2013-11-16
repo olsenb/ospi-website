@@ -25,6 +25,8 @@ class Account(models.Model):
     ip = models.IPAddressField()
     port = models.IntegerField(default=8080)
     weather_api = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=100, editable=False, blank=True)
+    state = models.CharField(max_length=2, editable=False, blank=True)
     zip_code = models.IntegerField(blank=True, null=True)
     password = models.CharField(max_length=100, blank=True, default="opendoor")
 
