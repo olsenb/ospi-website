@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
-from datetime import datetime
+import datetime
 from .weather import get_current_weather, get_forecast_weather, get_geo_lookup
-from .models import Account, ForecastWeatherManager, ForecastWeather, Schedule, Station
+from .models import Account, Day, ForecastWeatherManager, ForecastWeather, Schedule, Station
 from .cron import pull_data
 
 # Create your tests here.
@@ -81,41 +81,22 @@ class ForecastWeatherManagerTests(TestCase):
         self.assertEquals(forecasts[0].humidity, 24)
 
 
-class CronTests(TestCase):
+class ScheduleTests(TestCase):
+    six_am = datetime.time(6)
+    eight_am = datetime.time(8)
+    half_hour = datetime.time(0, 30)
+    five_minutes = datetime.time(0, 5)
 
     def setUp(self):
-        self.user = User.objects.create_superuser('myuser', 'myemail@test.com', 'mypassword')
-        self.account = Account.objects.create(user=self.user, ip="127.0.0.0", weather_api="some_api_key",
+        user = User.objects.create_superuser('myuser', 'myemail@test.com', 'mypassword')
+        self.account = Account.objects.create(user=user, ip="127.0.0.0", weather_api="some_api_key",
                                               zip_code="84770")
 
-    def test_pull_data(self):
-        self.assertEquals(len(ForecastWeather.objects.all()), 0)
-
-        self.account.city = "Flagstaff"
-        self.account.state = "AZ"
-        self.account.save()
-
-        pull_data()
-
-        self.assertNotEqual(self.account.city, "Saint_George")
-        self.assertNotEqual(self.account.state, "UT")
-        self.assertEquals(len(ForecastWeather.objects.all()), 4)
-
-    def test_pull_data_no_city_or_state(self):
-        self.assertEquals(len(ForecastWeather.objects.all()), 0)
-
-        pull_data()
-
-        self.account = Account.objects.get(id=self.account.id)
-        self.assertEquals(self.account.city, "Saint_George")
-        self.assertEquals(self.account.state, "UT")
-        self.assertEquals(len(ForecastWeather.objects.all()), 4)
-
-
-class ScheduleTests(TestCase):
-
-    def setUp(self):
-        pass
-
     def test_check_schedule_raining_today(self):
-        schedule = Schedule.objects.create()
+        schedule = Schedule.objects.create(account=self.account, name="test", start_time=self.six_am,
+                                           end_time=self.eight_am, repeat=self.half_hour, run_time=self.five_minutes)
+        schedule.days = Day.objects.all()
+        schedule.check_schedule(ForecastWeather.objects.fetch(self.account))
+        schedule = Schedule.objects.get(id=schedule.id)
+
+        self.assertFalse(schedule.active)
