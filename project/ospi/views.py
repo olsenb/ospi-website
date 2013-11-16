@@ -7,16 +7,9 @@ from django.utils import timezone
 import datetime
 
 
-class HomeView(DetailView):
+class HomeView(ListView):
+    model = Account
     template_name = 'ospi/rpi_home.html'
-
-    def get_object(self, queryset=None):
-        return []
-
-    def get_context_data(self, **kwargs):
-        context = super(HomeView, self).get_context_data(**kwargs)
-        context['stations'] = Station.objects.all()
-        return context
 
 
 class StationsListView(ListView):

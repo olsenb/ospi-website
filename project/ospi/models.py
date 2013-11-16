@@ -72,7 +72,7 @@ class Day(models.Model):
 
 
 class Station(models.Model):
-    account = models.ForeignKey(Account)
+    account = models.ForeignKey(Account, related_name="stations")
     number = models.IntegerField(default=0)
     name = models.CharField(max_length=100)
     pump = models.BooleanField(default=False)
@@ -195,7 +195,7 @@ class ForecastWeather(models.Model):
     rain = models.FloatField()
     humidity = models.FloatField()
 
-    manager = ForecastWeatherManager()
+    objects = ForecastWeatherManager()
 
     def __unicode__(self):
         return "%s (%s, %s)" % (self.day, self.low, self.high)

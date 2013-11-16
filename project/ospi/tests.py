@@ -2,8 +2,8 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from datetime import datetime
 from .weather import get_current_weather, get_forecast_weather, get_geo_lookup
-from .models import Account, Station, ForecastWeatherManager
-
+from .models import Account, Station, ForecastWeatherManager, ForecastWeather
+from .cron import pull_data
 
 # Create your tests here.
 class WeatherTests(TestCase):
@@ -48,7 +48,8 @@ class StationTests(TestCase):
 
     def setUp(self):
         user = User.objects.create_user("test", "test@test.com")
-        self.account = Account.objects.create(ip="192.168.2.6", port="8080", user=user)
+        self.account = Account.objects.create(ip="192.168.2.6", port="8080", user=user, weather_api="some_api_key",
+                                              zip_code="84770")
         for i in range(1, 9):
             Station.objects.create(account=self.account, number=i)
 
@@ -82,5 +83,17 @@ class ForecastWeatherManagerTests(TestCase):
 
 class CronTests(TestCase):
 
-    def test_pull_data(self):
-        pass
+    def setUp(self):
+        self.user = User.objects.create_superuser('myuser', 'myemail@test.com', 'mypassword')
+        self.account = Account.objects.create(user=self.user, ip="127.0.0.0", weather_api="some_api_key",
+                                              zip_code="84770")
+
+    def test_pull_data_no_city_or_state(self):
+        self.assertEquals(len(ForecastWeather.objects.all()), 0)
+
+        pull_data()
+
+        self.account = Account.objects.get(id=self.account.id)
+        self.assertEquals(self.account.city, "Saint_George")
+        self.assertEquals(self.account.state, "UT")
+        self.assertEquals(len(ForecastWeather.objects.all()), 4)
