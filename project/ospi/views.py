@@ -7,16 +7,9 @@ from django.utils import timezone
 import datetime
 
 
-class HomeView(DetailView):
+class HomeView(ListView):
+    model = Account
     template_name = 'ospi/rpi_home.html'
-
-    def get_object(self, queryset=None):
-        return []
-
-    def get_context_data(self, **kwargs):
-        context = super(HomeView, self).get_context_data(**kwargs)
-        context['stations'] = Station.objects.all()
-        return context
 
 
 class StationsListView(ListView):
@@ -72,12 +65,11 @@ class StatsView(ListView):
 
         data = []
         data.append(('Day','Usage','Total'))
-        i = 0
         total = 0.0
         for i in range(0,31):
             time_running = 0.0
             time = timezone.now()-datetime.timedelta(days=30-i)
-            logs = WaterLog.objects.filter(start_time=time)
+            logs = WaterLog.objects.filter(start_time__gte=time, start_time__lt=time+datetime.timedelta(days=1))
             for log in logs:
                 time_running += log.length.days * 24 + log.length.seconds // 3600
 

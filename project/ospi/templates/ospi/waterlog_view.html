@@ -9,10 +9,10 @@
             <th>Start Time</th>
             <th>End Time</th>
         </tr>
-        {% for log in obect_list %}
+        {% for log in object_list %}
         <tr>
             <td>{% if log.program %}{{ log.program }}{% else %}Manual{% endif %}</td>
-            <td>(( log.station }}</td>
+            <td>{{ log.station }}</td>
             <td>{{ log.length }}</td>
             <td>{{ log.start_time }}</td>
             <td>{{ log.end_time }}</td>
