@@ -63,6 +63,7 @@ class Account(models.Model):
 
 class Day(models.Model):
     day = models.CharField(max_length=10)
+    bit_value = models.IntegerField(unique=True)
 
     def __unicode__(self):
         return self.day
@@ -91,10 +92,13 @@ class Station(models.Model):
         if response is None:
             return None
         return bool(int(response))
+    @property
+    def bit_value(self):
+        return pow(2, self.number)
 
     @property
     def short_name(self):
-        return self.name[:12]
+        return self.name[:32]
 
     def __unicode__(self):
         return self.name
@@ -107,6 +111,7 @@ class Schedule(models.Model):
     days = models.ManyToManyField(Day, blank=True, null=True)
     day_restrictions = models.NullBooleanField(choices=DAY_TYPES)
     interval = models.IntegerField(default=1)
+    interval_offset = models.IntegerField(default=0)
     start_time = models.DateTimeField()
     repeat = models.TimeField()
     run_time = models.TimeField()
@@ -114,6 +119,57 @@ class Schedule(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def stop(self):
+        #TODO: calc stop time off of start + runtime * stations.count
+        return self.start_time
+
+    def days_map(self):
+        # return bitmap of days
+        # add 128 if restrictions are set
+        if self.interval > 1:
+            map = 128
+            #TODO: add interval_offset
+            #map + self.interval_offset
+            return map
+        map = 0
+        for day in self.days.all():
+            map += day.bit_value
+        if self.day_restrictions is not None:
+            map += 128
+        return map
+
+    def interval_map(self):
+        if self.interval > 1:
+            return self.interval
+        else:
+            if self.day_restrictions:
+                return 1
+        return 0
+
+    def station_map(self):
+        map = 0
+        for station in self.stations.all():
+            map += station.bit_value
+        return map
+
+    def send_schedule(self):
+
+        # v = [active, week+restriction, restrictions, start, stop, every, duration, stations]
+        # if v[1] == 128 then v[2] == interval
+        #v	[1,2,0,540,1080,5,62,255]
+        v = [
+            int(self.active),
+            self.day_map(),
+            self.interval_map(),
+            self.start_time,
+            self.stop(),
+            self.repeat,
+            self.run_time,
+            self.station_map,
+
+        ]
+        return v
 
 
 class ForecastWeatherManager(models.Manager):
@@ -156,9 +212,9 @@ class HourlyWeather(models.Model):
 class WaterLog(models.Model):
     account = models.ForeignKey(Account)
     station = models.ForeignKey(Station)
-    program = models.ForeignKey(Schedule, null=True)
+    program = models.ForeignKey(Schedule, null=True, blank=True)
     start_time = models.DateTimeField()
-    end_time = models.DateTimeField(null=True)
+    end_time = models.DateTimeField(null=True, blank=True)
 
     @property
     def length(self):
