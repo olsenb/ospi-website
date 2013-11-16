@@ -114,7 +114,8 @@ class Schedule(models.Model):
     day_restrictions = models.NullBooleanField(choices=DAY_TYPES)
     interval = models.IntegerField(default=1)
     interval_offset = models.IntegerField(default=0)
-    start_time = models.DateTimeField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
     repeat = models.TimeField()
     run_time = models.TimeField()
     stations = models.ManyToManyField(Station)
@@ -149,6 +150,9 @@ class Schedule(models.Model):
                 return 1
         return 0
 
+    def time_sec(self, time):
+        return time.hour * 60 + time.minute
+
     def station_map(self):
         map = 0
         for station in self.stations.all():
@@ -162,16 +166,26 @@ class Schedule(models.Model):
         #v	[1,2,0,540,1080,5,62,255]
         v = [
             int(self.active),
-            self.day_map(),
+            self.days_map(),
             self.interval_map(),
-            self.start_time,
-            self.stop(),
-            self.repeat,
-            self.run_time,
-            self.station_map,
+            self.time_sec(self.start_time),
+            self.time_sec(self.end_time),
+            self.time_sec(self.repeat),
+            self.time_sec(self.run_time),
+            self.station_map(),
 
         ]
-        return v
+
+        response = self.account.send(
+            "cp",
+            password=True,
+            pid=0,  # TODO: pull from station
+            rad_day="on",  # what is this?
+            rad_en="on",  # what is this?
+            rad_rst="on",  # what is this?
+            v=str(v))
+        return response
+
 
 
 class ForecastWeatherManager(models.Manager):
