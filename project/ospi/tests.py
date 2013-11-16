@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from datetime import datetime
 from .weather import get_current_weather, get_forecast_weather, get_geo_lookup
-from .models import Account, Station, ForecastWeatherManager, ForecastWeather
+from .models import Account, ForecastWeatherManager, ForecastWeather, Schedule, Station
 from .cron import pull_data
 
 # Create your tests here.
@@ -110,3 +110,12 @@ class CronTests(TestCase):
         self.assertEquals(self.account.city, "Saint_George")
         self.assertEquals(self.account.state, "UT")
         self.assertEquals(len(ForecastWeather.objects.all()), 4)
+
+
+class ScheduleTests(TestCase):
+
+    def setUp(self):
+        pass
+
+    def test_check_schedule_raining_today(self):
+        schedule = Schedule.objects.create()
