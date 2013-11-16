@@ -78,3 +78,9 @@ class ForecastWeatherManagerTests(TestCase):
         self.assertEquals(forecasts[0].low, "34")
         self.assertEquals(forecasts[0].rain, 0.0)
         self.assertEquals(forecasts[0].humidity, 24)
+
+
+class CronTests(TestCase):
+
+    def test_pull_data(self):
+        pass
