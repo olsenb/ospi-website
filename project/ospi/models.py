@@ -65,7 +65,7 @@ class Account(models.Model):
 
 class Day(models.Model):
     day = models.CharField(max_length=10)
-    bit_value = models.IntegerField(unique=True)
+    bit_value = models.IntegerField(unique=True, default=1)
 
     def __unicode__(self):
         return self.day

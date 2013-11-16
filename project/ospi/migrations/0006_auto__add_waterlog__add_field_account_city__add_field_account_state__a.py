@@ -11,12 +11,23 @@ class Migration(SchemaMigration):
         # Adding model 'WaterLog'
         db.create_table(u'ospi_waterlog', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('account', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['ospi.Account'])),
             ('station', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['ospi.Station'])),
-            ('program', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['ospi.Schedule'], null=True)),
+            ('program', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['ospi.Schedule'], null=True, blank=True)),
             ('start_time', self.gf('django.db.models.fields.DateTimeField')()),
-            ('end_time', self.gf('django.db.models.fields.DateTimeField')()),
+            ('end_time', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
         ))
         db.send_create_signal(u'ospi', ['WaterLog'])
+
+        # Adding field 'Account.city'
+        db.add_column(u'ospi_account', 'city',
+                      self.gf('django.db.models.fields.CharField')(default='', max_length=100, blank=True),
+                      keep_default=False)
+
+        # Adding field 'Account.state'
+        db.add_column(u'ospi_account', 'state',
+                      self.gf('django.db.models.fields.CharField')(default='', max_length=2, blank=True),
+                      keep_default=False)
 
         # Adding field 'Account.password'
         db.add_column(u'ospi_account', 'password',
@@ -26,6 +37,16 @@ class Migration(SchemaMigration):
         # Adding unique constraint on 'Station', fields ['account', 'number']
         db.create_unique(u'ospi_station', ['account_id', 'number'])
 
+        # Adding field 'Day.bit_value'
+        db.add_column(u'ospi_day', 'bit_value',
+                      self.gf('django.db.models.fields.IntegerField')(default=1, unique=True),
+                      keep_default=False)
+
+        # Adding field 'Schedule.interval_offset'
+        db.add_column(u'ospi_schedule', 'interval_offset',
+                      self.gf('django.db.models.fields.IntegerField')(default=0),
+                      keep_default=False)
+
 
     def backwards(self, orm):
         # Removing unique constraint on 'Station', fields ['account', 'number']
@@ -34,8 +55,20 @@ class Migration(SchemaMigration):
         # Deleting model 'WaterLog'
         db.delete_table(u'ospi_waterlog')
 
+        # Deleting field 'Account.city'
+        db.delete_column(u'ospi_account', 'city')
+
+        # Deleting field 'Account.state'
+        db.delete_column(u'ospi_account', 'state')
+
         # Deleting field 'Account.password'
         db.delete_column(u'ospi_account', 'password')
+
+        # Deleting field 'Day.bit_value'
+        db.delete_column(u'ospi_day', 'bit_value')
+
+        # Deleting field 'Schedule.interval_offset'
+        db.delete_column(u'ospi_schedule', 'interval_offset')
 
 
     models = {
@@ -77,16 +110,19 @@ class Migration(SchemaMigration):
         },
         u'ospi.account': {
             'Meta': {'object_name': 'Account'},
+            'city': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'ip': ('django.db.models.fields.IPAddressField', [], {'max_length': '15'}),
             'password': ('django.db.models.fields.CharField', [], {'default': "'opendoor'", 'max_length': '100', 'blank': 'True'}),
             'port': ('django.db.models.fields.IntegerField', [], {'default': '8080'}),
+            'state': ('django.db.models.fields.CharField', [], {'max_length': '2', 'blank': 'True'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
             'weather_api': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
             'zip_code': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'})
         },
         u'ospi.day': {
             'Meta': {'object_name': 'Day'},
+            'bit_value': ('django.db.models.fields.IntegerField', [], {'default': '1', 'unique': 'True'}),
             'day': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
@@ -115,6 +151,7 @@ class Migration(SchemaMigration):
             'days': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': u"orm['ospi.Day']", 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'interval': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
+            'interval_offset': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'repeat': ('django.db.models.fields.TimeField', [], {}),
             'run_time': ('django.db.models.fields.TimeField', [], {}),
@@ -134,9 +171,10 @@ class Migration(SchemaMigration):
         },
         u'ospi.waterlog': {
             'Meta': {'object_name': 'WaterLog'},
-            'end_time': ('django.db.models.fields.DateTimeField', [], {}),
+            'account': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['ospi.Account']"}),
+            'end_time': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'program': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['ospi.Schedule']", 'null': 'True'}),
+            'program': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['ospi.Schedule']", 'null': 'True', 'blank': 'True'}),
             'start_time': ('django.db.models.fields.DateTimeField', [], {}),
             'station': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['ospi.Station']"})
         }
