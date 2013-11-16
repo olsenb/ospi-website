@@ -44,6 +44,7 @@
           >
             <a href="{{ url }}">Stats</a>
           </li>
+          {% comment %}
           {% url 'stations_list' as url %}
           <li
             {% if url == request.path %}
@@ -52,6 +53,7 @@
           >
             <a href="{{ url }}">Stations</a>
           </li>
+          {% endcomment %}
           {% url 'rpi_logs' as url %}
           <li
             {% if url == request.path %}
@@ -60,6 +62,7 @@
           >
             <a href="{{ url }}">Logs</a>
           </li>
+          {% comment %}
           {% url 'rpi_settings' as url %}
           <li
             {% if url == request.path %}
@@ -68,6 +71,7 @@
           >
             <a href="{{ url }}">Settings</a>
           </li>
+          {% endcomment %}
         </ul>
         <ul class="nav navbar-nav navbar-right">
           {# TODO: Login/Logout #}
