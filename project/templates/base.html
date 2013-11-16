@@ -54,14 +54,6 @@
             <a href="{{ url }}">Stations</a>
           </li>
           {% endcomment %}
-          {% url 'rpi_logs' as url %}
-          <li
-            {% if url == request.path %}
-              class="active"
-            {% endif %}
-          >
-            <a href="{{ url }}">Logs</a>
-          </li>
           {% url 'schedule_list' as url %}
           <li
             {% if url == request.path %}
@@ -69,6 +61,14 @@
             {% endif %}
           >
             <a href="{{ url }}">Schedules</a>
+          </li>
+          {% url 'rpi_logs' as url %}
+          <li
+            {% if url == request.path %}
+              class="active"
+            {% endif %}
+          >
+            <a href="{{ url }}">Logs</a>
           </li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
