@@ -34,9 +34,11 @@ def update_log():
 def pull_data():
     accounts = Account.objects.all()
     for account in accounts:
-        if not account.zip:
+        if account.zip_code and not account.city or not account.state:
             data = get_geo_lookup(account)
-            account.city = data["location"]["city"]
+            temp_city = data["location"]["city"].replace('-', '_')
+            temp_city = temp_city.replace(' ', '_')
+            account.city = temp_city
             account.state = data["location"]["state"]
             account.save()
         forecasts = ForecastWeather.objects.fetch(account)

@@ -195,7 +195,7 @@ class ForecastWeather(models.Model):
     rain = models.FloatField()
     humidity = models.FloatField()
 
-    manager = ForecastWeatherManager()
+    objects = ForecastWeatherManager()
 
     def __unicode__(self):
         return "%s (%s, %s)" % (self.day, self.low, self.high)
