@@ -1,8 +1,8 @@
+import datetime
 import re
 
 from django.contrib.auth.models import User
 from django.db import models
-from datetime import datetime
 import requests
 from .weather import get_forecast_weather
 
@@ -195,7 +195,7 @@ class ForecastWeatherManager(models.Manager):
         result = get_forecast_weather(account)
         all_forecasts = []
         for forecast in result["forecast"]["simpleforecast"]["forecastday"]:
-            day = datetime(forecast['date']['year'], forecast['date']['month'], forecast['date']['day'])
+            day = datetime.datetime(forecast['date']['year'], forecast['date']['month'], forecast['date']['day'])
             forecast_weather = ForecastWeather(day=day, high=forecast["high"]["fahrenheit"],
                                                low=forecast["low"]["fahrenheit"], rain=forecast["qpf_allday"]["in"],
                                                humidity=forecast["minhumidity"])
