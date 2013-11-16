@@ -37,7 +37,8 @@
         var data = google.visualization.arrayToDataTable({{ pie|safe }});
 
         var options = {
-            title: "Head Usage"
+            title: "Water Usage by Station",
+            titleTextStyle: {fontSize: "20",},
         };
 
         var chart = new google.visualization.PieChart(document.getElementById('piechart'));
