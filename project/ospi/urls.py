@@ -7,6 +7,8 @@ urlpatterns = patterns('',
     url('^stations/$', StationsListView.as_view(), name='stations_list'),
     url('^stations/create/$', CreateStationsView.as_view(), name="stations_create"),
     url('^stations/edit/(?P<pk>\d+)/$', UpdateStationsView.as_view(), name='stations_edit'),
+    url('^stations/(?P<pk>\d+)/disable/$', 'project.ospi.views.disable_station', name='disable-station'),
+    url('^stations/(?P<pk>\d+)/enable/$', 'project.ospi.views.enable_station', name='enable-station'),
     url('^schedule/$', ScheduleListView.as_view(), name="schedule_list"),
     url('^schedule/create/$', CreateScheduleView.as_view(), name='schedule_create'),
     url(

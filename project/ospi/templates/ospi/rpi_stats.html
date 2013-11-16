@@ -1,32 +1,48 @@
 {% extends "ospi/base_home.html" %}
+
 {% load static %}
-
-{% block extrascripts %}
-<script type='text/javascript' src="{% static 'js/googlecharts.js' %}"></script>
-<script type='text/javascript'>
-    google.load('visualization', '1', {packages: ['corechart']});
-</script>
-<script type='text/javascript'>
-    function drawVisualization(){
-        var data = google.visualization.arrayToDataTable({{ data|safe }});
-
-        var options = {
-            vAxis: {title: "Gallons", format: '# gal'},
-            hAxis: {title: "Day"},
-            seriesType: "bars",
-            series: {1: {type: "line"}}
-        };
-
-        var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
-        chart.draw(data,options);
-    }
-    google.setOnLoadCallback(drawVisualization);
-</script>
-{% endblock %}
 
 {% block content_detail %}
   <h2>Stats</h2>
-  <div align='center'><h3>Total: {{ total }} gallons</h3></div>
-  <div id='chart_div' style='height:600px;'>
-  </div>
+
+  <div id='chart_div' style='height: 360px;'></div>
+  <br />
+  <div id='piechart' style='height: 360px;'></div>
+{% endblock %}
+
+{% block extrascripts %}
+  <script type='text/javascript' src="{% static 'js/googlecharts.js' %}"></script>
+  <script type='text/javascript'>
+    google.load('visualization', '1', {packages: ['corechart']});
+  </script>
+  <script type='text/javascript'>
+    function drawVisualization(){
+      var data = google.visualization.arrayToDataTable({{ data|safe }});
+
+      var options = {
+        vAxis: {title: "Gallons", format: '# gal'},
+        hAxis: {title: "Day"},
+        seriesType: "bars",
+        title: "Total: {{ total }} gallons",
+        titleTextStyle: {fontSize: "20",},
+      };
+
+      var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
+      chart.draw(data,options);
+    }
+    google.setOnLoadCallback(drawVisualization);
+  </script>
+  <script type='text/javascript'>
+    function DrawPieChart(){
+        var data = google.visualization.arrayToDataTable({{ pie|safe }});
+
+        var options = {
+            title: "Head Usage"
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+        chart.draw(data, options);
+    }
+    google.setOnLoadCallback(DrawPieChart);
+  </script>
 {% endblock %}

@@ -1,8 +1,8 @@
+import datetime
 import re
 
 from django.contrib.auth.models import User
 from django.db import models
-from datetime import datetime
 import requests
 from .weather import get_forecast_weather
 
@@ -59,6 +59,9 @@ class Account(models.Model):
 
         return {'stations': statuses}
 
+    def set_manual(self, on=True):
+        self.send("cv", password=True, mm=int(on))
+
     def __unicode__(self):
         return u"%s" % self.user
 
@@ -84,6 +87,7 @@ class Station(models.Model):
         unique_together = ('account', 'number')
 
     def enable(self, time=0):
+        self.account.set_manual()
         return self.account.send("sn%d=1&t=%d" % (self.number, time))
 
     def disable(self):
@@ -93,7 +97,8 @@ class Station(models.Model):
         response = self.account.send("sn%s" % self.number)
         if response is None:
             return None
-        return bool(int(response))
+        return bool(int(response[-1]))
+
     @property
     def bit_value(self):
         return pow(2, self.number)
@@ -101,6 +106,12 @@ class Station(models.Model):
     @property
     def short_name(self):
         return self.name[:32]
+
+    def gpm(self):
+        return self.gph / 60.0
+
+    def gph(self):
+        return self.heads * 5.0
 
     def __unicode__(self):
         return self.name
@@ -205,7 +216,7 @@ class ForecastWeatherManager(models.Manager):
         result = get_forecast_weather(account)
         all_forecasts = []
         for forecast in result["forecast"]["simpleforecast"]["forecastday"]:
-            day = datetime(forecast['date']['year'], forecast['date']['month'], forecast['date']['day'])
+            day = datetime.datetime(forecast['date']['year'], forecast['date']['month'], forecast['date']['day'])
             forecast_weather = ForecastWeather(day=day, high=forecast["high"]["fahrenheit"],
                                                low=forecast["low"]["fahrenheit"], rain=forecast["qpf_allday"]["in"],
                                                humidity=forecast["minhumidity"])

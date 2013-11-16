@@ -9,6 +9,8 @@ def update_log():
     accounts = Account.objects.all()
     for account in accounts:
         status = account.get_status()
+        if not sum(status['stations']):
+            account.set_manual(False)
         for idx, station in enumerate(status['stations']):
             try:
                 mystation = Station.objects.get(number=idx+1, account=account)
