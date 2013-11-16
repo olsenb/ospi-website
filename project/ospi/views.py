@@ -59,6 +59,7 @@ class WaterLogView(ListView):
 
 class StatsView(ListView):
     template_name='ospi/rpi_stats.html'
+    model=WaterLog
 
     def get_context_data(self, **kwargs):
         context = super(StatsView, self).get_context_data(**kwargs)

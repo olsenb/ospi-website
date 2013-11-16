@@ -11,7 +11,7 @@ urlpatterns = patterns('',
     url('^schedule/create/$', CreateScheduleView.as_view(), name='schedule_create'),
     url(
         '^stats/$',
-        TemplateView.as_view(template_name="ospi/rpi_stats.html"),
+        StatsView.as_view(),
         name="rpi_stats"
     ),
     url(
