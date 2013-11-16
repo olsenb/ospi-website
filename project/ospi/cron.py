@@ -3,6 +3,7 @@ from django.utils import timezone
 from weather import get_geo_lookup
 import kronos
 
+
 @kronos.register('* * * * *')
 def update_log():
     accounts = Account.objects.all()
@@ -34,10 +35,10 @@ def pull_data():
     accounts = Account.objects.all()
     for account in accounts:
         if not account.zip:
-            data = get_geo_lookup(account.weather_api)
+            data = get_geo_lookup(account)
             account.city = data["location"]["city"]
             account.state = data["location"]["state"]
             account.save()
-        forecasts = ForecastWeather.objects.fetch(account.weather_api, account.city, account.state)
+        forecasts = ForecastWeather.objects.fetch(account)
         for forecast in forecasts:
             forecast.save()

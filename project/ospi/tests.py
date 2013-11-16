@@ -14,7 +14,7 @@ class WeatherTests(TestCase):
                                               zip_code="84770")
 
     def test_get_current_weather(self):
-        result = get_current_weather(self.account.weather_api)
+        result = get_current_weather(self.account)
 
         self.assertIsNotNone(result["current_observation"])
 
@@ -25,7 +25,7 @@ class WeatherTests(TestCase):
         self.assertIsNotNone(root["relative_humidity"])
 
     def test_get_forecast_weather(self):
-        result = get_forecast_weather(self.account.weather_api)
+        result = get_forecast_weather(self.account)
 
         self.assertIsNotNone(result["forecast"])
 
@@ -36,7 +36,7 @@ class WeatherTests(TestCase):
             self.assertIsNotNone(forecast["minhumidity"])
 
     def test_get_geo_lookup(self):
-        result = get_geo_lookup(self.account.weather_api)
+        result = get_geo_lookup(self.account)
 
         self.assertIsNotNone(result["location"])
         self.assertEquals("84770", result["location"]["zip"])
@@ -64,8 +64,13 @@ class StationTests(TestCase):
 
 class ForecastWeatherManagerTests(TestCase):
 
+    def setUp(self):
+        self.user = User.objects.create_superuser('myuser', 'myemail@test.com', 'mypassword')
+        self.account = Account.objects.create(user=self.user, ip="127.0.0.0", weather_api="some_api_key",
+                                              zip_code="84770")
+
     def test_fetch(self):
-        forecasts = ForecastWeatherManager.fetch()
+        forecasts = ForecastWeatherManager.fetch(self.account)
 
         self.assertEquals(len(forecasts), 4)
         self.assertEquals(forecasts[0].day, datetime(2013, 11, 15))
@@ -73,3 +78,9 @@ class ForecastWeatherManagerTests(TestCase):
         self.assertEquals(forecasts[0].low, "34")
         self.assertEquals(forecasts[0].rain, 0.0)
         self.assertEquals(forecasts[0].humidity, 24)
+
+
+class CronTests(TestCase):
+
+    def test_pull_data(self):
+        pass
