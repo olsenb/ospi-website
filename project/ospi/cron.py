@@ -32,8 +32,13 @@ def update_log():
                 running.save()
 
 
-@kronos.register('0 */4 * * *')
+@kronos.register('0 1 * * *')
 def pull_data():
+    six_am = datetime.time(6)
+    eight_am = datetime.time(8)
+    half_hour = datetime.time(0, 30)
+    five_minutes = datetime.time(0, 5)
+
     accounts = Account.objects.all()
     for account in accounts:
         if account.zip_code and not account.city or not account.state:
@@ -46,3 +51,9 @@ def pull_data():
         forecasts = ForecastWeather.objects.fetch(account)
         for forecast in forecasts:
             forecast.save()
+        try:
+            schedule = Schedule.objects.filter(account=account)[0]
+        except IndexError:
+            schedule = Schedule.objects.create(account=account, name="Primary", start_time=six_am, end_time=eight_am,
+                                               repeat=half_hour, run_time=five_minutes)
+        schedule.check_schedule(forecasts)

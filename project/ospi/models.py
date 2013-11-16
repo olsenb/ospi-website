@@ -170,6 +170,17 @@ class Schedule(models.Model):
             map += station.bit_value
         return map
 
+    def check_schedule(self, forecast_weathers):
+        today = datetime.now().isoweekday()
+        for forecast_weather in forecast_weathers:
+            if forecast_weather.rain >= 1.0:
+                self.days.remove(Day.objects.get(bit_value=pow(2, today)))
+                today += 1
+                if today > 7:
+                    today = 1
+        self.save()
+        self.send_schedule()
+
     def send_schedule(self):
 
         # v = [active, week+restriction, restrictions, start, stop, every, duration, stations]
