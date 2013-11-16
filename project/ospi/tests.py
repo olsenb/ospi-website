@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
-from django.utils import timezone
-from datetime import datetime
+import datetime
 from .weather import get_current_weather, get_forecast_weather, get_geo_lookup
 from .models import Account, ForecastWeatherManager, ForecastWeather, Schedule, Station
 from .cron import pull_data
@@ -64,9 +63,13 @@ class StationTests(TestCase):
             self.assertFalse(station.status)
 
     def test_binary_clock(self):
+	time = datetime.now().time()
+	end_time = time + datetime.timedelta(second=60)
+
+	time = time.second
         stations = Station.objects.all().order_by('number')
-        while True:
-            seconds = timezone.now().time.second
+        while datetime.now() < end_time:
+            seconds = time()/60
             for i in range(6,0,-1):
                 if 2**i > seconds:
                     stations[6-i].enable()
