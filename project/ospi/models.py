@@ -177,7 +177,7 @@ class Schedule(models.Model):
 class ForecastWeatherManager(models.Manager):
     @staticmethod
     def fetch(api_key, zip_code):
-        result = get_forecast_weather()
+        result = get_forecast_weather(api_key)
         all_forecasts = []
         for forecast in result["forecast"]["simpleforecast"]["forecastday"]:
             day = datetime(forecast['date']['year'], forecast['date']['month'], forecast['date']['day'])
