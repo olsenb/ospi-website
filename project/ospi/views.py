@@ -1,10 +1,14 @@
-from django.shortcuts import render
-from django.core.urlresolvers import reverse
-from django.contrib import messages
-from .models import *
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
-from django.utils import timezone
 import datetime
+import logging
+
+from django.contrib import messages
+from django.core.urlresolvers import reverse
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, render
+from django.utils import timezone
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
+from .models import *
 
 
 class HomeView(ListView):
@@ -31,6 +35,45 @@ class UpdateStationsView(UpdateView):
 
     def get_success_url(self):
         return reverse('stations_list')
+
+
+def enable_station(request, pk):
+    station = get_object_or_404(Station, pk=pk)
+    if request.method == 'POST':
+        try:
+            station.enable()
+            return \
+                HttpResponse(
+                    """{"status": 200}""",
+                    content_type="application/json"
+                )
+        except Exception as e:
+            logging.error(e)
+            return \
+                HttpResponse(
+                    """{"status": 500}""",
+                    content_type="application/json",
+                    status=500
+                )
+
+def disable_station(request, pk):
+    station = get_object_or_404(Station, pk=pk)
+    if request.method == 'POST':
+        try:
+            station.disable()
+            return \
+                HttpResponse(
+                    """{"status": 200}""",
+                    content_type="application/json"
+                )
+        except Exception as e:
+            logging.error(e)
+            return \
+                HttpResponse(
+                    """{"status": 500}""",
+                    content_type="application/json",
+                    status=500
+                )
 
 
 class ScheduleListView(ListView):

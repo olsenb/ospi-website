@@ -11,7 +11,7 @@
       OpenSprinkler Pi
     </h2>
 
-    <strong>URL</strong>: 
+    <strong>URL</strong>:
     {% if account.get_remote_uri %}
       <a href="{{ account.get_remote_uri }}"
       >{{ account.get_remote_uri }}</a>
@@ -46,7 +46,7 @@
     <br/>
 
     <h3>Stations</h3>
-    {% for station in account.stations.all %}
+    {% if account.stations.exists %}
       <table class="table table-bordered">
         <thead>
           <tr>
@@ -56,65 +56,74 @@
           </tr>
         </thead>
         <tbody>
-          <tr
-            {% if station.statuss %}
-              class="success tooltippable"
-              title="This station is currently on."
-            {% elif station.statuss|default_if_none:"None" == "None" %}
-              class="warning tooltippable"
-              title="Unable to determine the status for this station."
-            {% endif %}
-          >
-            <td style="text-align: center; vertical-align: middle;">
-              {{ station.number }}
-            </td>
-            <td>
-              <h4>{{ station.name }}</h4>
-              <div class="row">
-                <div class="col-md-3">
-                  <b>pump?</b>: {{ station.pump|yesno }}<br/>
-                </div>
-                <div class="col-md-3">
-                  <b>heads</b>: {{ station.heads }}<br/>
-                </div>
-                <div class="col-md-3">
-                  <b>ignore rain?</b>: {{ station.ignore_rain|yesno }}<br/>
-                </div>
-                <div class="col-md-3">
-                  <b>soil type</b>: {{ station.soil_type }}<br/>
-                </div>
-              </div>
-            </td>
-            <td style="text-align: center; vertical-align: middle;">
-              {% if station.statuss %}
-                {# It's on, allow the user to turn it off. #}
-                <button type="button" class="btn btn-link">
-                  Turn Off
-                </button>
-              {% elif station.statuss|default_if_none:"None" == "None" %}
-                {# We aren't able to contact the station. No soup for you! #}
-                <button type="button" class="btn btn-link disabled">
-                  Turn On
-                </button>
-              {% else %}
-                {# The station must be off, allow the user to turn it on. #}
-                <button type="button" class="btn btn-link">
-                  Turn On
-                </button>
+          {% for station in account.stations.all %}
+            <tr
+              {% if station.status %}
+                class="success"
+              {% elif station.status|default_if_none:"None" == "None" %}
+                class="warning"
               {% endif %}
-              <br/>
-              <button type="button" class="btn btn-link">
-                Edit
-              </button>
-            </td>
-          </tr>
+            >
+              <td style="text-align: center; vertical-align: middle;">
+                {{ station.number }}
+              </td>
+              <td>
+                <h4>
+                  {{ station.name }}
+                  <small>
+                    <a href="{% url 'stations_edit' station.pk %}">Edit</a>
+                  </small>
+                </h4>
+                <div class="row">
+                  <div class="col-md-3">
+                    <b>pump?</b>: {{ station.pump|yesno }}<br/>
+                  </div>
+                  <div class="col-md-3">
+                    <b>heads</b>: {{ station.heads }}<br/>
+                  </div>
+                  <div class="col-md-3">
+                    <b>ignore rain?</b>: {{ station.ignore_rain|yesno }}<br/>
+                  </div>
+                  <div class="col-md-3">
+                    <b>soil type</b>: {{ station.soil_type }}<br/>
+                  </div>
+                </div>
+              </td>
+              <td style="text-align: center; vertical-align: middle;">
+                {% if station.status %}
+                  {# It's on, allow the user to turn it off. #}
+                  <button
+                    type="button"
+                    class="btn btn-danger turn-off-station"
+                    data-id="{{ station.pk }}"
+                  >
+                    Turn Off
+                  </button>
+                {% elif station.status|default_if_none:"None" == "None" %}
+                  {# We aren't able to contact the station. No soup for you! #}
+                  <button type="button" class="btn btn-success disabled">
+                    Turn On
+                  </button>
+                {% else %}
+                  {# The station must be off, allow the user to turn it on. #}
+                  <button
+                    type="button"
+                    class="btn btn-success turn-on-station"
+                    data-id="{{ station.pk }}"
+                  >
+                    Turn On
+                  </button>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
         </tbody>
       </table>
-    {% empty %}
+    {% else %}
       <div class="well">
         <h4>There are no stations configured yet.</h4>
       </div>
-    {% endfor %}
+    {% endif %}
   {% empty %}
     <div class="well">
       <h4>You don't have any OpenSprinkler Pis setup yet.</h4>
@@ -138,6 +147,60 @@
 
 {% block extrascripts %}
   <script>
-    $(".tooltippable").tooltip();
+    $(".turn-on-station").click(function(event) {
+      "use strict";
+      event.preventDefault();
+      var stationId = $(this).data('id');
+      $.ajax({
+        type: "POST",
+        url: "/ospi/stations/" + stationId + "/enable/",
+        beforeSend: function(request) {
+          request.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+        },
+        complete: function(xhr, status) {
+          if (status === "success") {
+            location.reload();
+          } else {
+            // Display an error alert message.
+            var errorMessage = [
+              '<div class="alert alert-danger alert-dismissable">',
+                '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>',
+                'An unknown error occurred in the system. Please try again later.',
+              '</div>'
+            ].join('');
+            $('div.messages').html(errorMessage).show();
+          }
+        },
+      });
+    });
+
+    $(".turn-off-station").click(function(event) {
+      "use strict";
+      event.preventDefault();
+      var stationId = $(this).data('id');
+      $.ajax({
+        type: "POST",
+        url: "/ospi/stations/" + stationId + "/disable/",
+        beforeSend: function(request) {
+          request.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+        },
+        success: function(result, status, xhr) {
+          location.reload();
+          {% comment %}
+            Hide the "Turn On" button and display the "Turn Off" button.
+          {% endcomment %}
+        },
+        error: function(xhr, status, error) {
+          // Display an error alert message.
+          var errorMessage = [
+            '<div class="alert alert-danger alert-dismissable">',
+              '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>',
+              'An unknown error occurred in the system. Please try again later.',
+            '</div>'
+          ].join('');
+          $('div.messages').html(errorMessage).show();
+        },
+      });
+    });
   </script>
 {% endblock %}
