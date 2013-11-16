@@ -94,6 +94,7 @@ class Station(models.Model):
         if response is None:
             return None
         return bool(int(response[-1]))
+
     @property
     def bit_value(self):
         return pow(2, self.number)
