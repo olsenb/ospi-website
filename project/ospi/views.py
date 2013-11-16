@@ -114,7 +114,7 @@ class StatsView(ListView):
         total = 0.0
         for i in range(0,31):
             time_running = 0.0
-            time = timezone.now()-datetime.timedelta(days=30-i)
+            time = timezone.now().date()-datetime.timedelta(days=30-i)
             logs = WaterLog.objects.filter(start_time__gte=time, start_time__lt=time+datetime.timedelta(days=1))
             for log in logs:
                 running = log.length.days * 24 + log.length.seconds // 3600

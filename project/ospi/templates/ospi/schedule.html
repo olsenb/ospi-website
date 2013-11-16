@@ -19,7 +19,7 @@ function drawChart() {
     dataTable.addColumn({type:'date', id:'Start'});
     dataTable.addColumn({type:'date', id:'End'});
     dataTable.addRows([
-        {% for object in object_list %}
+        {% for object in object_list.all %}
             {% for interval in object.get_intervals %}
             ['{{ object.name }}'{% for station in object.stations.all %},'{{ station.name }}'{% endfor %}, new Date(0,0,0,{{ interval.0|date:"H,i,s" }}), new Date(0,0,0,{{ interval.1|date:"H,i,s" }})],
             {% endfor %}
