@@ -4,73 +4,30 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
-
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Deleting model 'Zone'
-        db.delete_table(u'ospi_zone')
-
-        # Adding model 'Station'
-        db.create_table(u'ospi_station', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('account', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['ospi.Account'])),
-            ('number', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=100)),
-            ('pump', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('heads', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('soil_type', self.gf('django.db.models.fields.CharField')(max_length=15, blank=True)),
-            ('ignore_rain', self.gf('django.db.models.fields.BooleanField')(default=False)),
-        ))
-        db.send_create_signal(u'ospi', ['Station'])
-
-        # Adding field 'Schedule.account'
-        db.add_column(u'ospi_schedule', 'account',
-                      self.gf('django.db.models.fields.related.ForeignKey')(default=0, to=orm['ospi.Account']),
-                      keep_default=False)
-
-        # Removing M2M table for field zones on 'Schedule'
-        db.delete_table(db.shorten_name(u'ospi_schedule_zones'))
-
-        # Adding M2M table for field stations on 'Schedule'
-        m2m_table_name = db.shorten_name(u'ospi_schedule_stations')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('schedule', models.ForeignKey(orm[u'ospi.schedule'], null=False)),
-            ('station', models.ForeignKey(orm[u'ospi.station'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['schedule_id', 'station_id'])
-
+        "Write your forwards methods here."
+        # Note: Don't use "from appname.models import ModelName".
+        # Use orm.ModelName to refer to models in this application,
+        # and orm['appname.ModelName'] for models in other applications.
+        days = [
+            (u"Monday", 1),
+            (u"Tuesday", 2),
+            (u"Wednesday", 4),
+            (u"Thursday", 8),
+            (u"Friday", 16),
+            (u"Saturday", 32),
+            (u"Sunday", 64),
+        ]
+        if not db.dry_run:
+            for day, bit_value in days:
+                if not orm.Day.objects.filter(day=day, bit_value=bit_value).exists():
+                    orm.Day.objects.create(day=day, bit_value=bit_value)
 
     def backwards(self, orm):
-        # Adding model 'Zone'
-        db.create_table(u'ospi_zone', (
-            ('heads', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=100)),
-            ('soil_type', self.gf('django.db.models.fields.CharField')(max_length=15, blank=True)),
-            ('pump', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-        ))
-        db.send_create_signal(u'ospi', ['Zone'])
-
-        # Deleting model 'Station'
-        db.delete_table(u'ospi_station')
-
-        # Deleting field 'Schedule.account'
-        db.delete_column(u'ospi_schedule', 'account_id')
-
-        # Adding M2M table for field zones on 'Schedule'
-        m2m_table_name = db.shorten_name(u'ospi_schedule_zones')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('schedule', models.ForeignKey(orm[u'ospi.schedule'], null=False)),
-            ('zone', models.ForeignKey(orm[u'ospi.zone'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['schedule_id', 'zone_id'])
-
-        # Removing M2M table for field stations on 'Schedule'
-        db.delete_table(db.shorten_name(u'ospi_schedule_stations'))
-
+        "Write your backwards methods here."
+        pass
 
     models = {
         u'auth.group': {
@@ -111,17 +68,38 @@ class Migration(SchemaMigration):
         },
         u'ospi.account': {
             'Meta': {'object_name': 'Account'},
+            'city': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'ip': ('django.db.models.fields.IPAddressField', [], {'max_length': '15'}),
+            'password': ('django.db.models.fields.CharField', [], {'default': "'opendoor'", 'max_length': '100', 'blank': 'True'}),
             'port': ('django.db.models.fields.IntegerField', [], {'default': '8080'}),
+            'state': ('django.db.models.fields.CharField', [], {'max_length': '2', 'blank': 'True'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
             'weather_api': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
             'zip_code': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'})
         },
         u'ospi.day': {
             'Meta': {'object_name': 'Day'},
+            'bit_value': ('django.db.models.fields.IntegerField', [], {'default': '1', 'unique': 'True'}),
             'day': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
+        },
+        u'ospi.forecastweather': {
+            'Meta': {'object_name': 'ForecastWeather'},
+            'day': ('django.db.models.fields.DateField', [], {}),
+            'high': ('django.db.models.fields.IntegerField', [], {}),
+            'humidity': ('django.db.models.fields.FloatField', [], {}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'low': ('django.db.models.fields.IntegerField', [], {}),
+            'rain': ('django.db.models.fields.FloatField', [], {})
+        },
+        u'ospi.hourlyweather': {
+            'Meta': {'object_name': 'HourlyWeather'},
+            'hour': ('django.db.models.fields.DateTimeField', [], {}),
+            'humidity': ('django.db.models.fields.FloatField', [], {}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'rain': ('django.db.models.fields.FloatField', [], {}),
+            'temperature': ('django.db.models.fields.IntegerField', [], {})
         },
         u'ospi.schedule': {
             'Meta': {'object_name': 'Schedule'},
@@ -131,6 +109,7 @@ class Migration(SchemaMigration):
             'days': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': u"orm['ospi.Day']", 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'interval': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
+            'interval_offset': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'repeat': ('django.db.models.fields.TimeField', [], {}),
             'run_time': ('django.db.models.fields.TimeField', [], {}),
@@ -138,7 +117,7 @@ class Migration(SchemaMigration):
             'stations': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['ospi.Station']", 'symmetrical': 'False'})
         },
         u'ospi.station': {
-            'Meta': {'object_name': 'Station'},
+            'Meta': {'unique_together': "(('account', 'number'),)", 'object_name': 'Station'},
             'account': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['ospi.Account']"}),
             'heads': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -148,15 +127,16 @@ class Migration(SchemaMigration):
             'pump': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'soil_type': ('django.db.models.fields.CharField', [], {'max_length': '15', 'blank': 'True'})
         },
-        u'ospi.weather': {
-            'Meta': {'object_name': 'Weather'},
-            'day': ('django.db.models.fields.DateField', [], {}),
-            'high': ('django.db.models.fields.IntegerField', [], {}),
-            'humidity': ('django.db.models.fields.FloatField', [], {}),
+        u'ospi.waterlog': {
+            'Meta': {'object_name': 'WaterLog'},
+            'account': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['ospi.Account']"}),
+            'end_time': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'low': ('django.db.models.fields.IntegerField', [], {}),
-            'rain': ('django.db.models.fields.FloatField', [], {})
+            'program': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['ospi.Schedule']", 'null': 'True', 'blank': 'True'}),
+            'start_time': ('django.db.models.fields.DateTimeField', [], {}),
+            'station': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['ospi.Station']"})
         }
     }
 
     complete_apps = ['ospi']
+    symmetrical = True
