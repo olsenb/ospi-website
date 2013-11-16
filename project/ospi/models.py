@@ -220,4 +220,4 @@ class WaterLog(models.Model):
 
     @property
     def length(self):
-        return (self.end_time - self.start_time)
+        return self.end_time - self.start_time
