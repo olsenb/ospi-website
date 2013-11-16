@@ -223,4 +223,4 @@ class WaterLog(models.Model):
         if self.end_time:
             return (self.end_time - self.start_time)
         else:
-            return (timezone.now() - self.start_time_
+            return (timezone.now() - self.start_time)
