@@ -220,4 +220,7 @@ class WaterLog(models.Model):
 
     @property
     def length(self):
-        return (self.end_time - self.start_time)
+        if self.end_time:
+            return (self.end_time - self.start_time)
+        else:
+            return (timezone.now() - self.start_time_
