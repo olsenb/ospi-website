@@ -125,7 +125,7 @@ class StatsView(ListView):
             data.append([(str(time.month)+'/'+str(time.day)), round(usage,2)])
 
         for station in Station.objects.all():
-            logs = WaterLog.objects.filter(start_time__gte=timezone.now()-datetime.timedelta(days=30))
+            logs = WaterLog.objects.filter(start_time__gte=timezone.now()-datetime.timedelta(days=30), station=station)
             head_usage = 0
             for log in logs:
                 head_usage += (log.length.days * 24 + log.length.seconds //3600) * log.station.heads
