@@ -59,6 +59,9 @@ class Account(models.Model):
 
         return {'stations': statuses}
 
+    def set_manual(self, on=True):
+        self.send("cv", password=True, mm=int(on))
+
     def __unicode__(self):
         return u"%s" % self.user
 
@@ -84,6 +87,7 @@ class Station(models.Model):
         unique_together = ('account', 'number')
 
     def enable(self, time=0):
+        self.account.set_manual()
         return self.account.send("sn%d=1&t=%d" % (self.number, time))
 
     def disable(self):
