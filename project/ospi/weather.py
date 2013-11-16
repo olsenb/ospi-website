@@ -5,15 +5,15 @@ WUNDER_GROUND_URL = 'http://api.wunderground.com/api/%s/%s/q/%s.json'
 
 
 def get_current_weather(account):
-    return base_helper_function(account.weather_api, 'conditions', account.state, account.city)
+    return base_helper_function(account.weather_api, 'conditions', "UT", "Saint_George")
 
 
 def get_forecast_weather(account):
-    return base_helper_function(account.weather_api, 'forecast', account.state, account.city)
+    return base_helper_function(account.weather_api, 'forecast', "UT", "Saint_George")
 
 
 def get_geo_lookup(account):
-    return get_results(account.weather_api, 'geolookup', account.zip_code)
+    return get_results(account.weather_api, 'geolookup', "84790")
 
 
 def base_helper_function(api_key, method, state, city):
