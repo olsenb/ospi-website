@@ -1,52 +1,126 @@
 {% extends "ospi/base_home.html" %}
 
-{% block content_detail %}
-  <h2>Overview</h2>
-  <p>
-    <strong>Current Status</strong>: TODO
-  </p>
+{% load humanize %}
 
-  <h3>Stations</h3>
-  {% for station in stations %}
-    <table class="table table-bordered">
-      <tbody>
-        <tr
-          {% if station.statuss %}
-            class="success tooltippable"
-            title="This station is currently on."
-          {% elif station.statuss|default_if_none:"None" == "None" %}
-            class="warning tooltippable"
-            title="Unable to determine the status for this station."
-          {% endif %}
-        >
-          <td style="text-align: center; vertical-align: middle;">
-            {{ station.number }}
-          </td>
-          <td>
-            <h4>{{ station.name }}</h4>
-            <div class="row">
-              <div class="col-md-3">
-                <b>pump?</b>: {{ station.pump|yesno }}<br/>
+{% block content_detail %}
+  {% for account in object_list %}
+    <h2>
+      {% if object_list.count > 1 %}
+        {{ forloop.counter|ordinal }}
+      {% endif %}
+      OpenSprinkler Pi
+    </h2>
+
+    <strong>URL</strong>: 
+    {% if account.get_remote_uri %}
+      <a href="{{ account.get_remote_uri }}"
+      >{{ account.get_remote_uri }}</a>
+    {% else %}
+      --
+    {% endif %}
+    <br/>
+    <strong>Zip Code</strong>:
+    {% if account.zip_code %}
+      {{ account.zip_code }}
+    {% else %}
+      --
+    {% endif %}
+    <br/>
+    <strong>Last Watering</strong>:
+    {% if account.last_watering %}
+      <span title="{{ account.last_watering }}">
+        {{ account.last_watering|naturaltime }}
+      </span>
+    {% else %}
+      --
+    {% endif %}
+    <br/>
+    <strong>Next Watering</strong>:
+    {% if account.next_watering %}
+      <span title="{{ account.next_watering }}">
+        {{ account.next_watering|naturaltime }}
+      </span>
+    {% else %}
+      --
+    {% endif %}
+    <br/>
+
+    <h3>Stations</h3>
+    {% for station in account.stations.all %}
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th style="text-align: center;">#</th>
+            <th>Station Information</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            {% if station.statuss %}
+              class="success tooltippable"
+              title="This station is currently on."
+            {% elif station.statuss|default_if_none:"None" == "None" %}
+              class="warning tooltippable"
+              title="Unable to determine the status for this station."
+            {% endif %}
+          >
+            <td style="text-align: center; vertical-align: middle;">
+              {{ station.number }}
+            </td>
+            <td>
+              <h4>{{ station.name }}</h4>
+              <div class="row">
+                <div class="col-md-3">
+                  <b>pump?</b>: {{ station.pump|yesno }}<br/>
+                </div>
+                <div class="col-md-3">
+                  <b>heads</b>: {{ station.heads }}<br/>
+                </div>
+                <div class="col-md-3">
+                  <b>ignore rain?</b>: {{ station.ignore_rain|yesno }}<br/>
+                </div>
+                <div class="col-md-3">
+                  <b>soil type</b>: {{ station.soil_type }}<br/>
+                </div>
               </div>
-              <div class="col-md-3">
-                <b>heads</b>: {{ station.heads }}<br/>
-              </div>
-              <div class="col-md-3">
-                <b>ignore rain?</b>: {{ station.ignore_rain|yesno }}<br/>
-              </div>
-              <div class="col-md-3">
-                <b>soil type</b>: {{ station.soil_type }}<br/>
-              </div>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            </td>
+            <td style="text-align: center; vertical-align: middle;">
+              {% if station.statuss %}
+                {# It's on, allow the user to turn it off. #}
+                <button type="button" class="btn btn-link">
+                  Turn Off
+                </button>
+              {% elif station.statuss|default_if_none:"None" == "None" %}
+                {# We aren't able to contact the station. No soup for you! #}
+                <button type="button" class="btn btn-link disabled">
+                  Turn On
+                </button>
+              {% else %}
+                {# The station must be off, allow the user to turn it on. #}
+                <button type="button" class="btn btn-link">
+                  Turn On
+                </button>
+              {% endif %}
+              <br/>
+              <button type="button" class="btn btn-link">
+                Edit
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    {% empty %}
+      <div class="well">
+        <h4>There are no stations configured yet.</h4>
+      </div>
+    {% endfor %}
   {% empty %}
     <div class="well">
-      <h4>There are no stations configured yet.</h4>
+      <h4>You don't have any OpenSprinkler Pis setup yet.</h4>
     </div>
   {% endfor %}
+
 
   {% comment %}
   <div class="well">
