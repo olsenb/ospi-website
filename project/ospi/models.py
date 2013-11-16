@@ -171,6 +171,18 @@ class Schedule(models.Model):
                 return 1
         return 0
 
+    def get_intervals(self):
+        intervals = []
+        time = self.start_time
+        while time < self.end_time:
+            start = time
+            end = (datetime.datetime.combine(datetime.date(1,1,1),time) + datetime.timedelta(hours=self.run_time.hour) + datetime.timedelta(minutes=self.run_time.minute) + datetime.timedelta(seconds=self.run_time.second)).time()
+            intervals.append([start, end])
+            
+            time = (datetime.datetime.combine(datetime.date(1,1,1),end) + datetime.timedelta(hours=self.repeat.hour) + datetime.timedelta(minutes=self.repeat.minute) + datetime.timedelta(seconds=self.repeat.second)).time()
+        
+        return intervals
+
     def time_sec(self, time):
         return time.hour * 60 + time.minute
 
