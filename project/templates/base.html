@@ -62,16 +62,14 @@
           >
             <a href="{{ url }}">Logs</a>
           </li>
-          {% comment %}
-          {% url 'rpi_settings' as url %}
+          {% url 'schedule_list' as url %}
           <li
             {% if url == request.path %}
               class="active"
             {% endif %}
           >
-            <a href="{{ url }}">Settings</a>
+            <a href="{{ url }}">Schedules</a>
           </li>
-          {% endcomment %}
         </ul>
         <ul class="nav navbar-nav navbar-right">
           {# TODO: Login/Logout #}
