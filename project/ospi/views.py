@@ -128,7 +128,7 @@ class StatsView(ListView):
             logs = WaterLog.objects.filter(start_time__gte=timezone.now()-datetime.timedelta(days=30), station=station)
             head_usage = 0
             for log in logs:
-                head_usage += (log.length.days * 24 + log.length.seconds //3600) * log.station.heads
+                head_usage += (log.length.days * 24 + log.length.seconds //3600) * log.station.heads * 5
             pie.append([str(station.name), head_usage])
         
         context['data'] = data
