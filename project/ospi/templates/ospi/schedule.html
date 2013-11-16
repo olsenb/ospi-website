@@ -1,9 +1,31 @@
 {% extends "base.html" %}
 
 {% block content %}
-<pre>
-    List schedules.
-
-    schedules include - zones, start time, run time, days,
-</pre>
+<div id='timeline'></div>
 {% endblock content %}
+
+{% block extrascripts %}
+<script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization',
+       'version':'1','packages':['timeline']}]}"></script>
+
+<script type='text/javascript'>
+google.setOnLoadCallback(drawChart);
+function drawChart() {
+    var container = document.getElementById('timeline');
+    var chart = new google.visualization.Timeline(container);
+    var dataTable = new google.visualization.DataTable();
+    {% for object in object_list %}
+    dataTable.addColumn({ type: 'string', id:'{{ object.name }}'});
+    {% endfor %}
+    dataTable.addRows([
+        {% for object in object_list %}
+        ['{{ object.name }}', '{% for station in object.stations %}{{ station.name }}, {% endfor %}', new Date(0,0,0,{{ object.start_time|date:"h,i,s" }}), new Date(0,0,0,{{ object.end_time|date:"h,i,s" }})],
+        {% endfor %}
+    ]);
+    var options = {
+        timeline: { colorByRowLabel: true }
+    };
+    chart.draw(dataTable, options);
+}
+</script>
+{% endblock %}

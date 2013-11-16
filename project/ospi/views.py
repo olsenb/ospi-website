@@ -77,7 +77,7 @@ def disable_station(request, pk):
 
 
 class ScheduleListView(ListView):
-    template_name='ospi/schedule_list.html'
+    template_name='ospi/schedule.html'
     model=Schedule
 
 
