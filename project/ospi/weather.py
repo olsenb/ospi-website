@@ -3,28 +3,32 @@ import requests
 import json
 import os
 
-WUNDER_GROUND_URL = 'http://api.wunderground.com/api/%s/%s/q/UT/Saint_George.json'
+WUNDER_GROUND_URL = 'http://api.wunderground.com/api/%s/%s/q/%s.json'
 
 
-def get_current_weather(api_key):
+def get_current_weather(account):
     if settings.USE_TEST_DATA:
         return json.load(open(os.path.join(os.path.dirname(__file__), "templates/Current_Saint_George.json")))
-    return get_results(api_key, 'conditions')
+    return base_helper_function(account.weather_api, 'conditions', account.state, account.city)
 
 
-def get_forecast_weather(api_key):
+def get_forecast_weather(account):
     if settings.USE_TEST_DATA:
         return json.load(open(os.path.join(os.path.dirname(__file__), "templates/Forecast_Saint_George.json")))
-    return get_results(api_key, 'forecast')
+    return base_helper_function(account.weather_api, 'forecast', account.state, account.city)
 
 
-def get_geo_lookup(api_key):
+def get_geo_lookup(account):
     if settings.USE_TEST_DATA:
         return json.load(open(os.path.join(os.path.dirname(__file__), "templates/Geo_Lookup_Saint_George.json")))
-    return get_results(api_key, 'geolookup')
+    return get_results(account.weather_api, 'geolookup', account.zip_code)
 
 
-def get_results(api_key, method):
-    url = WUNDER_GROUND_URL % (api_key, method)
+def base_helper_function(api_key, method, state, city):
+    return get_results(api_key, method, "%s/%s".format(state, city))
+
+
+def get_results(api_key, method, lookup_key):
+    url = WUNDER_GROUND_URL % (api_key, method, lookup_key)
     r = requests.get(url)
     return json.load(r.text)
