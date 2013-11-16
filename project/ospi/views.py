@@ -1,5 +1,6 @@
 import datetime
 import logging
+from decimal import Decimal
 from weather import get_current_weather
 
 from django.contrib import messages
@@ -116,24 +117,24 @@ class StatsView(ListView):
         pie = []
         data.append(['Day','Usage'])
         pie.append(['Station', 'Total Hours'])
-        total = 0.0
+        total = Decimal(0.0)
         for i in range(0,31):
-            time_running = 0.0
+            time_running = Decimal(0.0)
             time = timezone.now().date()-datetime.timedelta(days=30-i)
             logs = WaterLog.objects.filter(start_time__gte=time, start_time__lt=time+datetime.timedelta(days=1))
             for log in logs:
-                running = log.length.days * 24 + log.length.seconds // 3600
-                time_running += running*log.station.heads
+                running = Decimal(log.length.days * 24 + (log.length.seconds/3600.0))
+                time_running += Decimal(running*log.station.heads)
 
-            usage = time_running*5
+            usage = Decimal(time_running*5)
             total += usage
             data.append([(str(time.month)+'/'+str(time.day)), round(usage,2)])
 
         for station in Station.objects.all():
             logs = WaterLog.objects.filter(start_time__gte=timezone.now()-datetime.timedelta(days=30), station=station)
-            head_usage = 0
+            head_usage = 0.0
             for log in logs:
-                head_usage += (log.length.days * 24 + log.length.seconds //3600) * log.station.heads * 5
+                head_usage += (log.length.days * 24  + (log.length.seconds/3600.0)) * log.station.heads * 5
             pie.append([str(station.name), head_usage])
         
         context['data'] = data
