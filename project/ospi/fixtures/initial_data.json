@@ -1,9 +1,0 @@
-[
-    { "pk": 1, "model": "ospi.day", "fields": { "day": "Sunday", "bit_value": 64 } },
-    { "pk": 2, "model": "ospi.day", "fields": { "day": "Monday", "bit_value": 1 } },
-    { "pk": 3, "model": "ospi.day", "fields": { "day": "Tuesday", "bit_value": 2 } },
-    { "pk": 4, "model": "ospi.day", "fields": { "day": "Wednesday", "bit_value": 4 } },
-    { "pk": 5, "model": "ospi.day", "fields": { "day": "Thursday", "bit_value": 8 } },
-    { "pk": 6, "model": "ospi.day", "fields": { "day": "Friday", "bit_value": 16 } },
-    { "pk": 7, "model": "ospi.day", "fields": { "day": "Saturday", "bit_value": 32 } }
-]
