@@ -65,7 +65,7 @@ class StationTests(TestCase):
 
     def test_binary_clock(self):
         stations = Station.objects.all().order_by('number')
-        while true:
+        while True:
             seconds = timezone.now().time.second
             for i in range(6,0,-1):
                 if 2**i > seconds:
