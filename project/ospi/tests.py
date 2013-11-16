@@ -4,7 +4,7 @@ import datetime
 from .weather import get_current_weather, get_forecast_weather, get_geo_lookup
 from .models import Account, ForecastWeatherManager, ForecastWeather, Schedule, Station
 from .cron import pull_data
-import timezone
+from django.utils import timezone
 
 # Create your tests here.
 class WeatherTests(TestCase):
@@ -65,16 +65,41 @@ class StationTests(TestCase):
 
     def test_binary_clock(self):
         time = timezone.now()
-        end_time = time + datetime.timedelta(second=60)
+        end_time = time + datetime.timedelta(seconds=60)
         stations = Station.objects.all().order_by('number')
         while timezone.now() < end_time:
-            time = timezone.now().time() 	
-            for i in range(6,0,-1):
-                if 2**i > seconds:
-                    stations[6-i].enable()
-                    seconds -= 2**i
-                else:
-                    stations[6-i].disable()
+            seconds = timezone.now().time().second
+            if 32 <= seconds:
+                stations[0].enable()
+                seconds -= 32
+            else:
+                stations[0].disable()
+            if 16 <= seconds:
+                stations[1].enable()
+                seconds -= 16
+            else:
+                stations[1].disable()
+            if 8 <= seconds:
+                stations[2].enable()
+                seconds -= 8
+            else:
+                stations[2].disable()
+            if 4 <= seconds:
+                stations[3].enable()
+                seconds -= 4
+            else:
+                stations[3].disable()
+            if 2 <= 2:
+                stations[4].enable()
+                seconds -= 2
+            else:
+                stations[4].disable()
+            if 1 <= seconds:
+                stations[5].enable()
+            else:
+                stations[5].disable()
+        for x in range(0,6):
+            stations[x].disable()
 
 
 class ForecastWeatherManagerTests(TestCase):
