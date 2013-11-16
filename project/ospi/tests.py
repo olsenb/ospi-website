@@ -88,6 +88,19 @@ class CronTests(TestCase):
         self.account = Account.objects.create(user=self.user, ip="127.0.0.0", weather_api="some_api_key",
                                               zip_code="84770")
 
+    def test_pull_data(self):
+        self.assertEquals(len(ForecastWeather.objects.all()), 0)
+
+        self.account.city = "Flagstaff"
+        self.account.state = "AZ"
+        self.account.save()
+
+        pull_data()
+
+        self.assertNotEqual(self.account.city, "Saint_George")
+        self.assertNotEqual(self.account.state, "UT")
+        self.assertEquals(len(ForecastWeather.objects.all()), 4)
+
     def test_pull_data_no_city_or_state(self):
         self.assertEquals(len(ForecastWeather.objects.all()), 0)
 
