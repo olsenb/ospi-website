@@ -144,12 +144,14 @@ class Schedule(models.Model):
         return self.start_time
 
     def days_map(self):
-        # return bitmap of days
-        # add 128 if restrictions are set
+        """ return bitmap of days,
+         add 128 if restrictions are set
+          this field is used for the interval offset if interval is used
+        """
+        #
         if self.interval > 1:
             map = 128
-            #TODO: add interval_offset
-            #map + self.interval_offset
+            map += self.interval_offset
             return map
         map = 0
         for day in self.days.all():
@@ -159,6 +161,9 @@ class Schedule(models.Model):
         return map
 
     def interval_map(self):
+        """
+        used for day restriction unless interval is used
+        """
         if self.interval > 1:
             return self.interval
         else:
@@ -188,13 +193,20 @@ class Schedule(models.Model):
         return map
 
     def check_schedule(self, forecast_weathers):
-        today = datetime.now().isoweekday()
         for forecast_weather in forecast_weathers:
+            try:
+                day = Day.objects.get(bit_value=pow(2, forecast_weather.day.isoweekday()))
+            except Day.DoesNotExist:
+                continue
+
+            # disable for rain
             if forecast_weather.rain >= 1.0:
-                self.days.remove(Day.objects.get(bit_value=pow(2, today)))
-                today += 1
-                if today > 7:
-                    today = 1
+                self.days.remove(day)
+            else:
+                self.days.add(day)
+            # modify run_time based on temp
+            # modify run_time based on humidity
+
         self.save()
         self.send_schedule()
 

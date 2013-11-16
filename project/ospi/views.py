@@ -1,5 +1,6 @@
 import datetime
 import logging
+from weather import get_current_weather
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse
@@ -14,6 +15,10 @@ from .models import *
 class HomeView(ListView):
     model = Account
     template_name = 'ospi/rpi_home.html'
+
+    def get_context_data(self, **kwargs):
+        weather = get_current_weather(self.model)
+        return super(HomeView, self).get_context_data(weather=weather, **kwargs)
 
 
 class StationsListView(ListView):
