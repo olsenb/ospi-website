@@ -57,19 +57,22 @@
         </thead>
         <tbody>
           <tr
-            {% if station.statuss %}
-              class="success tooltippable"
-              title="This station is currently on."
-            {% elif station.statuss|default_if_none:"None" == "None" %}
-              class="warning tooltippable"
-              title="Unable to determine the status for this station."
+            {% if station.status %}
+              class="success"
+            {% elif station.status|default_if_none:"None" == "None" %}
+              class="warning"
             {% endif %}
           >
             <td style="text-align: center; vertical-align: middle;">
               {{ station.number }}
             </td>
             <td>
-              <h4>{{ station.name }}</h4>
+              <h4>
+                {{ station.name }}
+                <small>
+                  <a href="{% url 'stations_edit' station.pk %}">Edit</a>
+                </small>
+              </h4>
               <div class="row">
                 <div class="col-md-3">
                   <b>pump?</b>: {{ station.pump|yesno }}<br/>
@@ -86,26 +89,30 @@
               </div>
             </td>
             <td style="text-align: center; vertical-align: middle;">
-              {% if station.statuss %}
+              {% if station.status %}
                 {# It's on, allow the user to turn it off. #}
-                <button type="button" class="btn btn-link">
+                <button
+                  type="button"
+                  class="btn btn-danger turn-off-station"
+                  data-id="{{ station.pk }}"
+                >
                   Turn Off
                 </button>
-              {% elif station.statuss|default_if_none:"None" == "None" %}
+              {% elif station.status|default_if_none:"None" == "None" %}
                 {# We aren't able to contact the station. No soup for you! #}
-                <button type="button" class="btn btn-link disabled">
+                <button type="button" class="btn btn-success disabled">
                   Turn On
                 </button>
               {% else %}
                 {# The station must be off, allow the user to turn it on. #}
-                <button type="button" class="btn btn-link">
+                <button
+                  type="button"
+                  class="btn btn-success turn-on-station"
+                  data-id="{{ station.pk }}"
+                >
                   Turn On
                 </button>
               {% endif %}
-              <br/>
-              <button type="button" class="btn btn-link">
-                Edit
-              </button>
             </td>
           </tr>
         </tbody>
@@ -138,6 +145,60 @@
 
 {% block extrascripts %}
   <script>
-    $(".tooltippable").tooltip();
+    $(".turn-on-station").click(function(event) {
+      "use strict";
+      event.preventDefault();
+      var stationId = $(this).data('id');
+      $.ajax({
+        type: "POST",
+        url: "/ospi/stations/" + stationId + "/enable/",
+        beforeSend: function(request) {
+          request.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+        },
+        complete: function(xhr, status) {
+          if (status === "success") {
+            location.reload();
+          } else {
+            // Display an error alert message.
+            var errorMessage = [
+              '<div class="alert alert-danger alert-dismissable">',
+                '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>',
+                'An unknown error occurred in the system. Please try again later.',
+              '</div>'
+            ].join('');
+            $('div.messages').html(errorMessage).show();
+          }
+        },
+      });
+    });
+
+    $(".turn-off-station").click(function(event) {
+      "use strict";
+      event.preventDefault();
+      var stationId = $(this).data('id');
+      $.ajax({
+        type: "POST",
+        url: "/ospi/stations/" + stationId + "/disable/",
+        beforeSend: function(request) {
+          request.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+        },
+        success: function(result, status, xhr) {
+          location.reload();
+          {% comment %}
+            Hide the "Turn On" button and display the "Turn Off" button.
+          {% endcomment %}
+        },
+        error: function(xhr, status, error) {
+          // Display an error alert message.
+          var errorMessage = [
+            '<div class="alert alert-danger alert-dismissable">',
+              '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>',
+              'An unknown error occurred in the system. Please try again later.',
+            '</div>'
+          ].join('');
+          $('div.messages').html(errorMessage).show();
+        },
+      });
+    });
   </script>
 {% endblock %}

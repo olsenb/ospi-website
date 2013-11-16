@@ -93,7 +93,7 @@ class Station(models.Model):
         response = self.account.send("sn%s" % self.number)
         if response is None:
             return None
-        return bool(int(response))
+        return bool(int(response[-1]))
     @property
     def bit_value(self):
         return pow(2, self.number)
