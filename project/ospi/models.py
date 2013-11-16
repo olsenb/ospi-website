@@ -1,4 +1,5 @@
 import datetime
+from django.utils import timezone
 import re
 
 from django.contrib.auth.models import User
@@ -14,7 +15,7 @@ SOIL_TYPES = (
 
 
 DAY_TYPES = (
-    (None, ''),
+    (None, 'No Restrictions'),
     (False, 'Even'),
     (True, 'Odd'),
 )
@@ -70,6 +71,9 @@ class Day(models.Model):
     day = models.CharField(max_length=10)
     bit_value = models.IntegerField(unique=True, default=1)
 
+    class Meta:
+        ordering = ('bit_value',)
+
     def __unicode__(self):
         return self.day
 
@@ -85,6 +89,7 @@ class Station(models.Model):
 
     class Meta:
         unique_together = ('account', 'number')
+        ordering = ('number',)
 
     def enable(self, time=0):
         self.account.set_manual()
@@ -114,7 +119,7 @@ class Station(models.Model):
         return self.heads * 5.0
 
     def __unicode__(self):
-        return self.name
+        return "%d - %s" % (self.number, self.name)
 
 
 class Schedule(models.Model):
@@ -127,8 +132,8 @@ class Schedule(models.Model):
     interval_offset = models.IntegerField(default=0)
     start_time = models.TimeField()
     end_time = models.TimeField()
-    repeat = models.TimeField()
-    run_time = models.TimeField()
+    repeat = models.TimeField(help_text="How often to restart the schedule")
+    run_time = models.TimeField(help_text="How long to run each station")
     stations = models.ManyToManyField(Station)
 
     def __unicode__(self):
@@ -253,6 +258,9 @@ class WaterLog(models.Model):
     program = models.ForeignKey(Schedule, null=True, blank=True)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField(null=True, blank=True)
+
+    def __unicode__(self):
+        return "%s - %s" % (self.station.number, self.start_time.strftime("%Y-%m-%d %H:%M"))
 
     @property
     def length(self):
