@@ -14,7 +14,7 @@ def update_log():
             except Station.DoesNotExist:
                 continue
             try:
-                running = WaterLog.objects.get(end_time__is_null=True, account=account, station=mystation)
+                running = WaterLog.objects.get(end_time__isnull=True, account=account, station=mystation)
             except WaterLog.DoesNotExist:
                 running = False
             except WaterLog.MultipleObjectsReturned:
