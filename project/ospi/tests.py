@@ -9,7 +9,9 @@ from .models import Account, Station, ForecastWeatherManager
 class WeatherTests(TestCase):
 
     def setUp(self):
-        self.account = Account.objects.create(weather_api="some_api_key", zip_code="84770")
+        self.user = User.objects.create_superuser('myuser', 'myemail@test.com', 'mypassword')
+        self.account = Account.objects.create(user=self.user, ip="127.0.0.0", weather_api="some_api_key",
+                                              zip_code="84770")
 
     def test_get_current_weather(self):
         result = get_current_weather(self.account.weather_api)
