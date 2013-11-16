@@ -110,7 +110,7 @@ class Schedule(models.Model):
     account = models.ForeignKey(Account)
     name = models.CharField(max_length=100)
     active = models.BooleanField(default=True)
-    days = models.ManyToManyField(Day, blank=True, null=True)
+    days = models.ManyToManyField(Day, related_name="schedules", blank=True, null=True)
     day_restrictions = models.NullBooleanField(choices=DAY_TYPES)
     interval = models.IntegerField(default=1)
     interval_offset = models.IntegerField(default=0)
