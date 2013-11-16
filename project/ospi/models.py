@@ -103,6 +103,12 @@ class Station(models.Model):
     def short_name(self):
         return self.name[:32]
 
+    def gpm(self):
+        return self.gph / 60.0
+
+    def gph(self):
+        return self.heads * 5.0
+
     def __unicode__(self):
         return self.name
 

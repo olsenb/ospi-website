@@ -26,6 +26,7 @@
       --
     {% endif %}
     <br/>
+    {% comment %}
     <strong>Last Watering</strong>:
     {% if account.last_watering %}
       <span title="{{ account.last_watering }}">
@@ -44,6 +45,7 @@
       --
     {% endif %}
     <br/>
+    {% endcomment %}
 
     <h3>Stations</h3>
     {% if account.stations.exists %}
@@ -74,12 +76,13 @@
                     <a href="{% url 'stations_edit' station.pk %}">Edit</a>
                   </small>
                 </h4>
-                <div class="row">
+                <b>heads</b>:
+                {{ station.heads }}
+                <i>(~{{ station.gph|floatformat:"-2" }} <abbr title="gallons per hour">gph</abbr>)</i>
+                <br/>
+                {% comment %}
                   <div class="col-md-3">
                     <b>pump?</b>: {{ station.pump|yesno }}<br/>
-                  </div>
-                  <div class="col-md-3">
-                    <b>heads</b>: {{ station.heads }}<br/>
                   </div>
                   <div class="col-md-3">
                     <b>ignore rain?</b>: {{ station.ignore_rain|yesno }}<br/>
@@ -87,7 +90,7 @@
                   <div class="col-md-3">
                     <b>soil type</b>: {{ station.soil_type }}<br/>
                   </div>
-                </div>
+                {% endcomment %}
               </td>
               <td style="text-align: center; vertical-align: middle;">
                 {% if station.status %}
@@ -147,6 +150,8 @@
 
 {% block extrascripts %}
   <script>
+    $("abbr").tooltip();
+
     $(".turn-on-station").click(function(event) {
       "use strict";
       event.preventDefault();
