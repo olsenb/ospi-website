@@ -65,7 +65,7 @@ class StatsView(ListView):
         context = super(StatsView, self).get_context_data(**kwargs)
 
         data = []
-        data.append(['Day','Usage','Total'])
+        data.append(['Day','Usage'])
         total = 0.0
         for i in range(0,31):
             time_running = 0.0
@@ -77,7 +77,8 @@ class StatsView(ListView):
             usage = time_running*5
             total += usage
 
-            data.append([(str(time.month) + '/' + str(time.day)), round(usage,2), round(total,2)])
+            data.append([(str(time.month) + '/' + str(time.day)), round(usage,2)])
         
         context['data'] = data
+        context['total'] = round(total,2)
         return context

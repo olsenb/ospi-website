@@ -11,7 +11,6 @@
         var data = google.visualization.arrayToDataTable({{ data|safe }});
 
         var options = {
-            title : "Daily Water Usage",
             vAxis: {title: "Gallons", format: '# gal'},
             hAxis: {title: "Day"},
             seriesType: "bars",
@@ -27,7 +26,7 @@
 
 {% block content_detail %}
   <h2>Stats</h2>
-
+  <div align='center'><h3>Total: {{ total }} gallons</h3></div>
   <div id='chart_div' style='height:600px;'>
   </div>
 {% endblock %}
