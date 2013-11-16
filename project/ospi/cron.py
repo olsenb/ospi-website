@@ -1,6 +1,8 @@
 from .views import *
 from django.utils import timezone
+from weather import get_geo_lookup
 import kronos
+
 
 @kronos.register('* * * * *')
 def update_log():
@@ -13,7 +15,7 @@ def update_log():
             except Station.DoesNotExist:
                 continue
             try:
-                running = WaterLog.objects.get(end_time__is_null=True, account=account, station=mystation)
+                running = WaterLog.objects.get(end_time__isnull=True, account=account, station=mystation)
             except WaterLog.DoesNotExist:
                 running = False
             except WaterLog.MultipleObjectsReturned:
@@ -33,10 +35,10 @@ def pull_data():
     accounts = Account.objects.all()
     for account in accounts:
         if not account.zip:
-            data = get_geo_lookup()
+            data = get_geo_lookup(account)
             account.city = data["location"]["city"]
             account.state = data["location"]["state"]
             account.save()
-        forecasts = ForecastWeather.objects.fetch(account.weather_api, account.city, account.state)
+        forecasts = ForecastWeather.objects.fetch(account)
         for forecast in forecasts:
             forecast.save()

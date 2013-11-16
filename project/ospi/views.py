@@ -86,5 +86,6 @@ class StatsView(ListView):
 
             data.append(((str(time.month) + '/' + str(time.day)), round(usage,2), round(total,2)))
         
+        print data
         context['data'] = data
         return context

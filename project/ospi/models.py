@@ -110,7 +110,7 @@ class Schedule(models.Model):
     account = models.ForeignKey(Account)
     name = models.CharField(max_length=100)
     active = models.BooleanField(default=True)
-    days = models.ManyToManyField(Day, blank=True, null=True)
+    days = models.ManyToManyField(Day, related_name="schedules", blank=True, null=True)
     day_restrictions = models.NullBooleanField(choices=DAY_TYPES)
     interval = models.IntegerField(default=1)
     interval_offset = models.IntegerField(default=0)
@@ -176,8 +176,8 @@ class Schedule(models.Model):
 
 class ForecastWeatherManager(models.Manager):
     @staticmethod
-    def fetch(api_key, zip_code):
-        result = get_forecast_weather()
+    def fetch(account):
+        result = get_forecast_weather(account)
         all_forecasts = []
         for forecast in result["forecast"]["simpleforecast"]["forecastday"]:
             day = datetime(forecast['date']['year'], forecast['date']['month'], forecast['date']['day'])
