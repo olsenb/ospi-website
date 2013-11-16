@@ -1,14 +1,11 @@
-import datetime
 import logging
 from decimal import Decimal
 from weather import get_current_weather
 
-from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
-from django.utils import timezone
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.shortcuts import get_object_or_404
+from django.views.generic import CreateView, ListView, UpdateView
 
 from .models import *
 
@@ -18,7 +15,7 @@ class HomeView(ListView):
     template_name = 'ospi/rpi_home.html'
 
     def get_context_data(self, **kwargs):
-        weather = get_current_weather(self.model)
+        weather = get_current_weather(Account.objects.all()[0])
         return super(HomeView, self).get_context_data(weather=weather, **kwargs)
 
 

@@ -6,5 +6,3 @@ from .base import *
 DEBUG = False
 
 # TODO: Separate SECRET_KEY for production!
-
-USE_TEST_DATA = False
