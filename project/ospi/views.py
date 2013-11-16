@@ -2,9 +2,23 @@ from django.shortcuts import render
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from .models import *
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.utils import timezone
+import datetime
 
-# Create your views here.
+
+class HomeView(DetailView):
+    template_name = 'ospi/rpi_home.html'
+
+    def get_object(self, queryset=None):
+        return []
+
+    def get_context_data(self, **kwargs):
+        context = super(HomeView, self).get_context_data(**kwargs)
+        context['stations'] = Station.objects.all()
+        return context
+
+
 class StationsListView(ListView):
     template_name='ospi/stations_view.html'
     model=Station
@@ -49,3 +63,28 @@ class CreateAccountView(CreateView):
 class WaterLogView(ListView):
     template_name='ospi/waterlog_view.html'
     model=WaterLog
+
+class StatsView(ListView):
+    template_name='ospi/rpi_stats.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(StatsView, self).get_context_data(**kwargs)
+
+        data = []
+        data.append(('Day','Usage','Total'))
+        i = 0
+        total = 0.0
+        for i in range(0,31):
+            time_running = 0.0
+            time = timezone.now()-datetime.timedelta(days=30-i)
+            logs = WaterLog.objects.filter(start_time=time)
+            for log in logs:
+                time_running += log.length.days * 24 + log.length.seconds // 3600
+
+            usage = time_running*5
+            total += usage
+
+            data.append(((str(time.month) + '/' + str(time.day)), round(usage,2), round(total,2)))
+        
+        context['data'] = data
+        return context

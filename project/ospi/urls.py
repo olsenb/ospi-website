@@ -3,7 +3,7 @@ from .views import *
 from django.views.generic import TemplateView
 
 urlpatterns = patterns('',
-    url('^$', TemplateView.as_view(template_name="ospi/rpi_home.html"), name='rpi_home'),
+    url('^$', HomeView.as_view(), name='rpi_home'),
     url('^stations/$', StationsListView.as_view(), name='stations_list'),
     url('^stations/create/$', CreateStationsView.as_view(), name="stations_create"),
     url('^stations/edit/(?P<pk>\d+)/$', UpdateStationsView.as_view(), name='stations_edit'),

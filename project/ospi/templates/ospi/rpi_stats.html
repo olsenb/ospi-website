@@ -1,14 +1,33 @@
 {% extends "ospi/base_home.html" %}
+{% load static %}
+
+{% block extrascripts %}
+<script type='text/javascript' src="{% static 'js/googlecharts.js' %}"></script>
+<script type='text/javascript'>
+    google.load('visualization', '1', {packages: ['corechart']});
+</script>
+<script type='text/javascript'>
+    function drawVizualization(){
+        var data = google.vizualization.arrayToTable({{ data }});
+
+        var options = {
+            title : "Daily Water Usage",
+            vAxis: {title: "Gallons"},
+            hAxis: {title: "Day"},
+            seriesType: "bars",
+            series: {1: {type: "line"}}
+        };
+
+        var chart = new google.vizualization.ComboChart(document.getElementById('chart_div')
+        chart.draw(data,options);
+    }
+    google.setOnLoadCallback(drawVizualization);
+</script>
+{% endblock %}
 
 {% block content_detail %}
   <h2>Stats</h2>
 
-  <div class="well">
-    <pre>
-      TODO:
-        - Show statistics of water usage.
-          - Water used across all stations/zones for the past 30 days.
-          - Water usage per station.
-    </pre>
+  <div id='chart_div'>
   </div>
 {% endblock %}

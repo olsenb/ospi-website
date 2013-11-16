@@ -6,14 +6,64 @@
     <strong>Current Status</strong>: TODO
   </p>
 
+  <h3>Stations</h3>
+  {% for station in stations %}
+    <table class="table table-bordered">
+      <tbody>
+        <tr
+          {% if station.statuss %}
+            class="success tooltippable"
+            title="This station is currently on."
+          {% elif station.statuss|default_if_none:"None" == "None" %}
+            class="warning tooltippable"
+            title="Unable to determine the status for this station."
+          {% endif %}
+        >
+          <td style="text-align: center; vertical-align: middle;">
+            {{ station.number }}
+          </td>
+          <td>
+            <h4>{{ station.name }}</h4>
+            <div class="row">
+              <div class="col-md-3">
+                <b>pump?</b>: {{ station.pump|yesno }}<br/>
+              </div>
+              <div class="col-md-3">
+                <b>heads</b>: {{ station.heads }}<br/>
+              </div>
+              <div class="col-md-3">
+                <b>ignore rain?</b>: {{ station.ignore_rain|yesno }}<br/>
+              </div>
+              <div class="col-md-3">
+                <b>soil type</b>: {{ station.soil_type }}<br/>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  {% empty %}
+    <div class="well">
+      <h4>There are no stations configured yet.</h4>
+    </div>
+  {% endfor %}
+
+  {% comment %}
   <div class="well">
     <pre>
       TODO:
         - Current status of the RPi unit.
-        - Overview of the stations and their current status.
+        x Overview of the stations and their current status.
         - Time of last watering.
         - Weather data?
         - Action buttons to manually enable/disable a particular station.
     </pre>
   </div>
+  {% endcomment %}
+{% endblock %}
+
+{% block extrascripts %}
+  <script>
+    $(".tooltippable").tooltip();
+  </script>
 {% endblock %}
