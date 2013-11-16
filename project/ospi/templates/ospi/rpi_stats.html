@@ -12,7 +12,7 @@
 
         var options = {
             title : "Daily Water Usage",
-            vAxis: {title: "Gallons"},
+            vAxis: {title: "Gallons", format: '# gal'},
             hAxis: {title: "Day"},
             seriesType: "bars",
             series: {1: {type: "line"}}
@@ -28,6 +28,6 @@
 {% block content_detail %}
   <h2>Stats</h2>
 
-  <div id='chart_div'>
+  <div id='chart_div' style='height:600px;'>
   </div>
 {% endblock %}
