@@ -35,6 +35,29 @@ echo "Bootstrapping the project..."
 info "Ensuring that the OS dependencies are present..."
 # TODO
 # MySQL, Python, virtualenv, etc. doesn't exist? Here's how to install it...
+TO_INSTALL=""
+if [ `dpkg -l | grep -c python-dev` == 0 ]
+then
+    TO_INSTALL = "${TO_INSTALL}python-dev "
+fi
+
+if [ `dpkg -l | grep -c python-virtualenv` == 0 ]
+then
+    TO_INSTALL = "${TO_INSTALL}python-virtualenv "
+fi
+
+if [ `dpkg -l | grep -c libncurses5-dev` == 0 ]
+then
+    TO_INSTALL = "${TO_INSTALL}libncurses5-dev "
+fi
+
+
+if [ ${TO_INSTALL} -ne "" ]
+then
+   fail "You need to install $TO_INSTALL first. Run 'sudo apt-get install ${TO_INSTALL}'."
+   exit 0
+fi
+
 success "Done ensuring that the OS dependencies are present."
 
 info "Ensuring that the virtualenv exists..."
